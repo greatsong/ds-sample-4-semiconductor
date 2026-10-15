@@ -162,14 +162,14 @@ k-NN은 가중치를 주는 기능이 없어서 끈 상태로 비교했습니다
 - 10103 이철수: AI 추측대로 했으면 양품과 불량을 거꾸로 분석할 뻔했다. 마지막에 숫자를 다시 맞춰 보지 않았으면 틀린 숫자로 발표할 뻔했다.
 
 ## 생성형 AI 활용 명시
-- 사용한 도구: 수업에서 제공한 AI 채팅 도구(이하 AI)
+- 사용한 AI 모델: Claude Fable 5.1(Anthropic). 이 샘플은 선생님이 이 모델로 만들었습니다. 실제 팀은 사용한 모델 이름과 버전(예: ChatGPT GPT-5, Gemini 2.5, Claude 등)을 그대로 적습니다.
 - 사용한 곳: 분석 코드 작성, 우리 해석에 대한 반론 요청, 발표 문구 다듬기
 - 사용하지 않은 곳: 주제를 고른 이유, 결과 해석, 결론. 이 부분은 팀이 직접 썼습니다.
 - 검증 방법: 모든 수치는 `code/check.py`로 다시 계산해 맞췄습니다. AI의 제안을 받아들이거나 거절한 기록은 `log/`의 기록에 있습니다.
 
 ## 참고문헌
 1. 데이터: McCann, M. & Johnston, A. (2008). SECOM [Dataset]. UCI Machine Learning Repository. https://doi.org/10.24432/C54305 (CC BY 4.0), 2026-10-15 접근.
-2. 소프트웨어: Python 3.11, pandas 2.3.3, scikit-learn 1.8.0, plotly 6.6.0, Streamlit 1.53.1, xgboost 3.2.0, stlite 1.4.0
+2. 소프트웨어: Python 3.11, pandas 2.3.3, scikit-learn 1.8.0, plotly 6.6.0, Streamlit 1.53.1, xgboost 3.2.0, stlite 1.4.0 · 생성형 AI: Claude Fable 5.1(Anthropic)
 3. 교과서: 『데이터 과학』(2022 개정 교육과정 고등학교 교과서)
 
 ## 실행 방법
