@@ -93,7 +93,7 @@ with tab1:
     st.subheader("우리 팀의 질문")
     st.markdown("> **센서 590개의 측정값으로 불량 웨이퍼를 미리 가려낼 수 있는가**")
     st.write("반도체 공장에는 센서가 수백 개 달려 있습니다. 그 숫자만으로 불량을 미리 알 수 있는지 알아보았습니다.")
-    st.write("11·12차시에 뇌졸중 데이터로 '정확도만 보면 놓치는 것'을 배웠습니다. 공장 데이터에서도 같은 일이 생기는지 함께 확인했습니다.")
+    st.write
 
 with tab2:
     counts = df["fail"].value_counts().reindex([0, 1])
