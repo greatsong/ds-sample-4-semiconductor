@@ -3,23 +3,17 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>팀 수율 포스터</title>
+<title>팀 수율 포스터 v4</title>
 <!--
-  A1 세로 포스터(594×841mm), 2단 연구 포스터 양식.
-  화면에서는 창 폭에 맞춰 줄여 보이고, 인쇄·PDF에서는 원 크기.
-
-  [양식과 내용의 분리]
-  · 공통 양식(바꾸지 않는다): <style> 전체, 제목띠·2단·구역·발치의 틀, 맨 아래 <script>.
-  · 내용(샘플마다 바꾼다): "내용 시작"과 "내용 끝" 주석 사이의 글과 표.
-  · 그래프 3개와 QR 2개는 code/poster_figs.py가 FIG 표시 사이에 SVG로 넣는다(손으로 고치지 않는다).
-  · 구역 번호와 이름(1. 서론 ~ 6. 한계와 향후 연구)은 다섯 샘플이 같다.
-
-  [쓸 수 있는 내용 부품]
-  p.q 연구 질문 · ul 글머리표(·) · p.flow 분석 흐름 · table.t 표(tr.pick = 선택 모델 행)
-  table.models 모델 소개 표(열 6개) · div.fig 그래프 · p.cap 그래프·표 설명 · div.nums 핵심 수치 3개
-  p.final 결론 한 문장 · span.lb 줄 앞의 짧은 머리말 · b 강조 숫자
+  A1 세로 포스터(594×841mm) v4. poster.html과 글꼴·색·여백·단 폭(2단 균등, 260mm씩)이 같다.
+  · 데이터 과학 포스터 세션의 표준 구역: 요약 / 1. 서론 / 2. 데이터 / 3. 방법 / 4. 결과 / 5. 논의 / 6. 결론과 한계 / 참고문헌(발치)
+  · 제목띠 아래 요약 상자(초록 형식, 전체 폭, 옅은 바탕): 연구 질문 · 데이터와 방법 · 핵심 결과 · 결론
+  · 그림·표에는 번호와 캡션(그림 1~3, 표 1). 캡션 안에 그래프가 말하는 것 한 문장
+  · 방법의 분석 과정은 파이프라인 6칸 한 줄(선택 칸만 강조 색)
+  · 그래프 3개는 code/poster_figs.py가 단 폭(260mm)에 맞춰 그려 FIG 표시 사이에 넣는다. QR 2개는 poster.html의 것과 같다.
 -->
 <style>
+
   /* ════════════ 공통 양식: 다섯 샘플이 같다 ════════════ */
   :root {
     --accent: #1f3d7a;          /* 남색 한 가지 */
@@ -61,7 +55,7 @@
   /* 2단 */
   .body { display: grid; grid-template-columns: 1fr 1fr; gap: var(--gap);
     padding: 13mm var(--pad-x) 0; min-height: 0; }
-  .col { display: flex; flex-direction: column; justify-content: space-between; gap: 12mm; min-height: 0; overflow: hidden; }
+  .col { display: flex; flex-direction: column; justify-content: space-between; gap: 10mm; min-height: 0; overflow: hidden; }
 
   /* 구역 */
   .sec { font-size: var(--fs-body); line-height: 1.42; }
@@ -76,9 +70,9 @@
   .sec b { color: var(--accent); font-weight: 800; }
   .lb { font-weight: 800; margin-right: .3em; }
   .q { font-weight: 800; }
-  .flow { font-weight: 700; color: var(--accent); }
-  .flow small { font-size: var(--fs-small); font-weight: 400; }
-  .flow i { font-style: normal; color: var(--ink); font-weight: 400; margin: 0 .25em; }
+  .flow { font-weight: 700; color: var(--accent); font-size: .9em; }
+  .flow span { white-space: nowrap; }
+  .flow i { font-style: normal; color: var(--ink); font-weight: 400; margin: 0 .35em; }
   .cap { font-size: var(--fs-small); line-height: 1.35; }
   .fig svg { display: block; width: 100%; height: auto; }
   .final { font-weight: 800; }
@@ -101,10 +95,57 @@
   .nums .k { display: block; font-size: var(--fs-small); margin-top: 1.5mm; }
 
   /* 발치 */
-  .foot { margin-top: 10mm; padding: 7mm var(--pad-x) 13mm; border-top: .6mm solid var(--ink);
+  .foot { margin-top: 8mm; padding: 6mm var(--pad-x) 11mm; border-top: .6mm solid var(--ink);
     display: grid; grid-template-columns: 1fr auto; gap: 14mm; align-items: center; font-size: var(--fs-small); line-height: 1.5; }
   .foot .qr { display: grid; grid-template-columns: 30mm auto; gap: 4mm; align-items: center; }
   .foot .qr svg { width: 30mm; height: 30mm; display: block; }
+
+  /* ════════════ v4: 공통 양식 위에 덮어쓴다(단 폭은 그대로) ════════════ */
+  .poster { grid-template-rows: auto auto 1fr auto; }
+  .head { padding-bottom: 8mm; }
+
+  /* 요약 상자(초록) */
+  .abstract { margin: 7mm var(--pad-x) 0; padding: 5.5mm 8mm 6mm; background: var(--tint);
+    border-left: 2mm solid var(--accent); font-size: 25pt; line-height: 1.42; }
+  .abstract h2 { font-size: 28pt; font-weight: 800; color: var(--accent); margin-bottom: 1.5mm; }
+  .abstract p + p { margin-top: 1mm; }
+  .abstract .lb { color: var(--accent); }
+  .abstract .end { font-weight: 800; }
+
+  .body { padding-top: 9mm; }
+  .col { gap: 7mm; }
+  .nums .v { font-size: 48pt; }
+
+  /* 파이프라인: 6칸 한 줄, 칸 사이 화살표 */
+  .pipe { display: grid; grid-template-columns: repeat(6, 1fr); column-gap: 5mm; }
+  .pipe div { position: relative; border: .6mm solid var(--accent); border-radius: 2mm; padding: 2mm 1mm 2.2mm;
+    text-align: center; font-size: var(--fs-small); line-height: 1.22; letter-spacing: -.03em;
+    display: flex; flex-direction: column; justify-content: center; }
+  .pipe div b { display: block; color: var(--ink); font-weight: 800; }
+  .pipe div span { display: block; margin-top: 1mm; }
+  .pipe div.pk { background: var(--accent); color: #fff; }
+  .pipe div.pk b { color: #fff; }
+  .pipe div:not(:last-child)::after { content: ""; position: absolute; right: -4.6mm; top: 50%; margin-top: -2mm;
+    border-left: 3.4mm solid var(--accent); border-top: 2mm solid transparent; border-bottom: 2mm solid transparent; }
+
+  /* 그림·표 캡션: 번호는 굵게, 그래프가 말하는 것 한 문장 포함 */
+  .figcap { font-size: 22pt; line-height: 1.35; }
+  .figcap .no, .tabcap .no { font-weight: 800; color: var(--accent); margin-right: .3em; }
+  .tabcap { font-size: 22pt; line-height: 1.35; }
+  .sec .tabcap + table { margin-top: 1.5mm; }
+
+  /* 발치: 참고문헌 */
+  .foot .ref-lab { font-weight: 800; color: var(--accent); margin-right: .4em; }
+
+  /* 우리 팀이 찾아낸 것: 번호 원 + 굵은 헤드라인 + 근거 한 줄 */
+  .finds { list-style: none; counter-reset: f; }
+  .sec .finds li { padding-left: 14mm; text-indent: 0; position: relative; }
+  .sec .finds li::before { counter-increment: f; content: counter(f); position: absolute; left: 0; top: .6mm;
+    width: 10mm; height: 10mm; border-radius: 50%; background: var(--accent); color: #fff;
+    font-size: 22pt; line-height: 10mm; text-align: center; font-weight: 800; }
+  .sec .finds li + li { margin-top: 2.5mm; }
+  .nums .v small { font-size: .5em; font-weight: 800; }
+  .finds .hl { display: block; font-size: 26pt; font-weight: 800; line-height: 1.3; }
 </style>
 </head>
 <body>
@@ -114,16 +155,23 @@
   <!-- ════════ 제목띠 ════════ -->
   <header class="head">
     <div>
-      <!-- 내용 시작: 제목(핵심 질문) · 팀 · 학교 줄 -->
       <h1>센서 590개의 측정값으로<br>불량 웨이퍼를 미리 가려낼 수 있는가</h1>
       <div class="team">팀 수율 · 10101 홍길동 · 10102 김영희 · 10103 이철수</div>
       <div class="school">당곡고등학교 데이터 과학 팀 프로젝트 · 2026</div>
       <div class="note">선생님이 만든 가상 팀의 샘플 · 데이터와 수치는 실제 계산값</div>
-      <!-- 내용 끝 -->
     </div>
     <div class="qr"><!-- FIG:qr_repo --><svg role="img" aria-label="https://github.com/greatsong/ds-sample-4-semiconductor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 37 37" shape-rendering="crispEdges" class="segno"><path class="qrline" stroke="#000" d="M2 2.5h7m5 0h1m1 0h2m1 0h3m1 0h3m2 0h7m-33 1h1m5 0h1m2 0h1m2 0h1m2 0h1m2 0h1m2 0h4m1 0h1m5 0h1m-33 1h1m1 0h3m1 0h1m2 0h4m1 0h2m1 0h1m1 0h1m3 0h1m2 0h1m1 0h3m1 0h1m-33 1h1m1 0h3m1 0h1m2 0h3m1 0h1m4 0h2m2 0h2m2 0h1m1 0h3m1 0h1m-33 1h1m1 0h3m1 0h1m3 0h1m1 0h2m2 0h1m6 0h1m2 0h1m1 0h3m1 0h1m-33 1h1m5 0h1m1 0h1m1 0h4m4 0h3m3 0h1m1 0h1m5 0h1m-33 1h7m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h7m-16 1h2m1 0h5m-25 1h1m2 0h1m1 0h2m1 0h3m1 0h5m3 0h3m2 0h1m1 0h1m-28 1h1m4 0h1m3 0h2m1 0h1m1 0h1m2 0h1m2 0h2m2 0h4m3 0h2m-32 1h2m3 0h1m1 0h1m2 0h2m3 0h4m1 0h1m2 0h1m2 0h2m1 0h1m1 0h1m-32 1h2m4 0h1m1 0h1m4 0h1m1 0h1m4 0h2m3 0h1m1 0h2m-29 1h1m1 0h2m1 0h2m2 0h2m6 0h1m2 0h1m1 0h2m1 0h1m2 0h1m2 0h1m-32 1h1m1 0h1m1 0h1m1 0h2m1 0h1m2 0h1m1 0h3m1 0h2m1 0h1m1 0h6m1 0h2m-33 1h2m1 0h1m2 0h1m1 0h1m1 0h2m1 0h2m2 0h2m1 0h2m1 0h1m1 0h4m1 0h2m-32 1h1m2 0h2m3 0h3m3 0h2m1 0h2m2 0h1m1 0h2m1 0h1m4 0h1m-31 1h1m1 0h1m1 0h2m3 0h1m2 0h1m3 0h1m1 0h4m1 0h1m1 0h1m1 0h1m2 0h1m-32 1h2m3 0h1m1 0h2m3 0h1m1 0h1m1 0h1m1 0h1m4 0h3m1 0h1m1 0h1m-29 1h1m1 0h4m2 0h1m1 0h2m1 0h1m1 0h1m1 0h1m2 0h1m2 0h3m3 0h3m-33 1h1m3 0h1m8 0h2m2 0h1m1 0h3m1 0h2m2 0h1m3 0h1m-30 1h1m3 0h1m2 0h1m1 0h1m2 0h6m1 0h1m1 0h2m6 0h2m-31 1h2m1 0h1m1 0h1m6 0h4m2 0h2m2 0h3m3 0h3m-33 1h2m1 0h5m3 0h3m1 0h1m3 0h1m1 0h1m4 0h1m2 0h2m1 0h1m-32 1h2m2 0h1m1 0h1m1 0h1m6 0h1m2 0h1m1 0h3m4 0h2m1 0h1m-32 1h1m1 0h2m1 0h3m1 0h1m3 0h5m2 0h2m2 0h6m1 0h2m-25 1h2m2 0h1m5 0h2m2 0h1m1 0h1m3 0h2m2 0h1m-33 1h7m2 0h2m1 0h1m7 0h2m2 0h1m1 0h1m1 0h3m-31 1h1m5 0h1m1 0h1m1 0h2m1 0h2m1 0h1m2 0h3m2 0h1m3 0h1m3 0h1m-33 1h1m1 0h3m1 0h1m2 0h1m1 0h1m1 0h4m4 0h2m1 0h6m1 0h2m-33 1h1m1 0h3m1 0h1m1 0h2m2 0h1m2 0h1m7 0h1m2 0h1m1 0h1m-29 1h1m1 0h3m1 0h1m6 0h1m3 0h2m1 0h2m6 0h1m1 0h1m1 0h1m-33 1h1m5 0h1m4 0h1m3 0h4m1 0h2m2 0h3m-27 1h7m1 0h2m1 0h1m4 0h1m4 0h1m2 0h2m2 0h2m1 0h1"/></svg>
 <!-- /FIG:qr_repo -->저장소</div>
   </header>
+
+  <!-- ════════ 요약(초록) ════════ -->
+  <section class="abstract">
+    <h2>요약</h2>
+    <p><span class="lb">연구 질문:</span>공정 센서 값으로 불량 웨이퍼를 미리 가려낼 수 있는가</p>
+    <p><span class="lb">데이터와 방법:</span>UCI SECOM 웨이퍼 1,567장 · 센서 446개로 불량을 판정하는 로지스틱 회귀(가중치 켬)를 후보 모델 5종·기준선(전부 양품)과 비교</p>
+    <p><span class="lb">핵심 결과:</span>재현율 0.190(불량 21장 중 4장), 정확도 0.838로 기준선 0.933보다 낮음</p>
+    <p class="end"><span class="lb">결론:</span>정확도 93%는 아무것도 하지 않은 것과 같고, 이 데이터로는 불량을 미리 가려내기 어려움</p>
+  </section>
 
   <div class="body">
 
@@ -132,27 +180,17 @@
 
       <section class="sec">
         <h2>1. 서론</h2>
-        <!-- 내용 시작: 연구 질문 1줄 · 왜 이 주제인가 3줄 · 이 포스터에서 보이는 것 1줄 -->
-        <p class="q">연구 질문: 공정 센서 값으로 불량 웨이퍼를 미리 가려낼 수 있는가</p>
-        <ul>
-          <li>뉴스에서 자주 듣는 반도체 수율(양품의 비율)에서 출발</li>
-          <li>수업의 뇌졸중 데이터: 정확도가 높아도 환자를 거의 찾지 못함</li>
-          <li>불량이 <b>6.6%</b>뿐인 공장 데이터에서도 같은 일이 생기는가</li>
-        </ul>
-        <p><span class="lb">이 포스터:</span>불량을 가려내는 분류 모델 다섯 개와 기준선의 비교, 그 해석과 한계</p>
-        <!-- 내용 끝 -->
+        <p class="intro">반도체 공장은 수율(웨이퍼 가운데 양품의 비율)을 높이기 위해 공정 곳곳에 센서를 달아 측정값을 기록한다. 그런데 SECOM 데이터에서 불량 웨이퍼는 1,567장 중 104장(<b>6.6%</b>)뿐이어서, 모두 양품이라고 답해도 정확도가 93%를 넘는다. 정확도만 보면 불량을 거의 찾지 못한 모델도 좋은 모델로 보일 수 있다. 이 연구는 공정 센서 값으로 불량 웨이퍼를 미리 가려낼 수 있는가를 밝히고자 한다. 센서 446개로 가중치를 켠 로지스틱 회귀를 만들고, 후보 모델 5종을 기준선(전부 양품)과 무작위·시간 순 분할에서 비교하였다. 그 결과 정확도로 기준선을 넘은 모델은 없었고, 선택한 모델도 불량 21장 중 4장만 잡았다.</p>
       </section>
 
       <section class="sec">
         <h2>2. 데이터</h2>
-        <!-- 내용 시작: 출처·크기 · 변수 표(3~5행) · 분포 그래프 · 전처리 판단 2~3줄 -->
-        <p><span class="lb">출처·크기:</span>UCI SECOM(2008년) · <b>1,567행 · 592열</b></p>
-        <table class="t">
-          <tr><th>사용한 열</th><th>뜻</th><th class="r">값</th></tr>
-          <tr><td>fail</td><td>판정(예측할 값)</td><td class="r">양품 1,463 · 불량 104</td></tr>
-          <tr><td>sensor_001~590</td><td>센서 측정값(입력)</td><td class="r">590개 중 446개 사용</td></tr>
-          <tr><td>timestamp</td><td>측정 시각(분할 확인용)</td><td class="r">7월 19일~10월 17일</td></tr>
-        </table>
+        <ul>
+          <li>UCI SECOM(2008년 7~10월) 웨이퍼 <b>1,567장 · 592열</b></li>
+          <li>예측: fail(양품 1,463장 · 불량 <b>104장</b>)</li>
+          <li>입력: 센서 590개(이름·단위 비공개) · 빈칸 <b>41,951칸</b></li>
+          <li>상수 열 116개·빈칸 50% 초과 열 28개 제거 → <b>446개</b></li>
+        </ul>
         <div class="fig"><!-- FIG:hist --><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 658.731678 166.0865" xmlns="http://www.w3.org/2000/svg" version="1.1">
  
  <defs>
@@ -385,44 +423,37 @@ L 652.740477 120.024
  </defs>
 </svg>
 <!-- /FIG:hist --></div>
-        <p class="cap">왼쪽: 판정별 웨이퍼 수 · 오른쪽: 열별 빈칸 비율(센서 칸 924,530개 중 빈칸 41,951개)</p>
-        <ul>
-          <li>모든 행이 같은 값인 상수 열 <b>116개</b> 제거: 구분할 정보가 없음</li>
-          <li>빈칸이 절반을 넘는 열 <b>28개</b> 제거(빈칸 50.7%~91.2%) → <b>446개</b></li>
-          <li>남은 빈칸 <b>10,868개</b>는 학습 데이터의 열별 중앙값으로 채움</li>
-        </ul>
-        <!-- 내용 끝 -->
+        <p class="figcap"><span class="no">그림 1.</span>판정별 웨이퍼 수(왼쪽)와 센서 590개의 열별 빈칸 비율(오른쪽). 불량은 6.6%뿐이고, 빈칸은 소수의 열에 몰림</p>
       </section>
 
       <section class="sec">
         <h2>3. 방법</h2>
-        <!-- 내용 시작: 분석 흐름 · 후보 모델 표 · 선택 이유 2줄 · 모델 소개 표(행 3, 열 6) · 평가지표 2줄 -->
-        <p class="flow">수집<small>(1,567장)</small><i>→</i><wbr>변수 선택<small>(센서)</small><i>→</i><wbr>전처리<small>(446열·표준화)</small><i>→</i><wbr>분할<small>(층화·시간 순)</small><i>→</i><wbr>기준선<small>(0.933)</small><i>→</i><wbr>후보 모델 5종 비교<i>→</i><wbr>선택<small>(F1)</small><i>→</i><wbr>평가<small>(재현율)</small><i>→</i><wbr>해석<small>(상관·시기)</small></p>
+        <div class="pipe">
+          <div><b>데이터<br>수집</b><span>1,567장</span></div>
+          <div><b>전처리</b><span>열 144개 제거·중앙값·표준화</span></div>
+          <div><b>분할·<br>기준선</b><span>층화 8:2·시간 순·전부 양품</span></div>
+          <div><b>후보 모델<br>5종 비교</b><span>재현율·F1</span></div>
+          <div class="pk"><b>선택:<br>로지스틱</b><span>가중치 켬</span></div>
+          <div><b>평가·<br>해석</b><span>혼동행렬·시기별 불량률</span></div>
+        </div>
+        <p class="tabcap"><span class="no">표 1.</span>후보 모델 비교(시험 314장, 불량 21장)</p>
         <table class="t">
-          <tr><th>후보 모델(시험 314장, 불량 21장)</th><th class="r">정확도</th><th class="r">재현율</th><th class="r">F1</th><th class="r">잡은 불량</th></tr>
-          <tr><td>기준선(전부 양품)</td><td class="r">0.933</td><td class="r">0.000</td><td class="r">0.000</td><td class="r">0장</td></tr>
-          <tr class="pick"><td>로지스틱 회귀(가중치 켬, 선택)</td><td class="r">0.838</td><td class="r">0.190</td><td class="r">0.136</td><td class="r">4장</td></tr>
-          <tr><td>k-NN(k=5, 가중치 없음)</td><td class="r">0.933</td><td class="r">0.048</td><td class="r">0.087</td><td class="r">1장</td></tr>
-          <tr><td>결정 트리(깊이 4, 가중치 켬)</td><td class="r">0.656</td><td class="r">0.381</td><td class="r">0.129</td><td class="r">8장</td></tr>
-          <tr><td>랜덤 포레스트(300그루, 가중치 켬)</td><td class="r">0.933</td><td class="r">0.000</td><td class="r">0.000</td><td class="r">0장</td></tr>
-          <tr><td>XGBoost(기본값, 가중치 켬)</td><td class="r">0.930</td><td class="r">0.000</td><td class="r">0.000</td><td class="r">0장</td></tr>
+          <tr><th>모델</th><th class="r">정확도</th><th class="r">재현율</th><th class="r">F1</th></tr>
+          <tr><td>기준선(전부 양품)</td><td class="r">0.933</td><td class="r">0.000</td><td class="r">0.000</td></tr>
+          <tr class="pick"><td>로지스틱 회귀(가중치 켬, 선택)</td><td class="r">0.838</td><td class="r">0.190</td><td class="r">0.136</td></tr>
+          <tr><td>k-NN(k=5)</td><td class="r">0.933</td><td class="r">0.048</td><td class="r">0.087</td></tr>
+          <tr><td>결정 트리(깊이 4)</td><td class="r">0.656</td><td class="r">0.381</td><td class="r">0.129</td></tr>
+          <tr><td>랜덤 포레스트(300그루)</td><td class="r">0.933</td><td class="r">0.000</td><td class="r">0.000</td></tr>
+          <tr><td>XGBoost</td><td class="r">0.930</td><td class="r">0.000</td><td class="r">0.000</td></tr>
         </table>
         <ul>
-          <li>정확도로 기준선을 넘은 모델이 없어 F1이 가장 높은 로지스틱 회귀 선택</li>
-          <li>센서마다 계수가 나와 판정 방향을 설명할 수 있음</li>
+          <li><span class="lb">선택 이유:</span>기준선을 넘은 후보 없음 → F1 최고·계수로 설명되는 로지스틱</li>
+          <li>결정 트리는 불량 <b>8장</b>을 잡았지만 양품 <b>95장</b>을 불량으로 판정</li>
         </ul>
-        <table class="models">
-          <colgroup><col style="width:14%"><col style="width:22%"><col style="width:15%"><col style="width:15%"><col style="width:14%"><col style="width:20%"></colgroup>
-          <tr><th>모델</th><th>원리</th><th>장점</th><th>단점</th><th>이런 상황에 좋다</th><th>우리 데이터 결과</th></tr>
-          <tr class="pick"><td>로지스틱<br>(선택)</td><td>계수 합을 확률로 바꿔 판정</td><td>계수로 판정 방향 확인</td><td>복잡한 관계에 약함</td><td>이유 설명이 필요할 때</td><td>재현율 0.190<br>F1 0.136</td></tr>
-          <tr><td>결정 트리<br>(비교 1)</td><td>센서 값 질문으로 차례로 나눔</td><td>판정 규칙을 그대로 읽음</td><td>불량 판정 과다</td><td>규칙 확인이 필요할 때</td><td>재현율 0.381<br>양품 95장 오판</td></tr>
-          <tr><td>XGBoost<br>(비교 2)</td><td>오차를 줄이는 트리를 차례로 더함</td><td>정확도가 높은 편</td><td>다수 범주로 쏠림</td><td>정확도가 중요할 때</td><td>정확도 0.930<br>재현율 0</td></tr>
-        </table>
         <ul>
-          <li><span class="lb">정확도</span>맞힌 비율 · <span class="lb">재현율</span>실제 불량 중 잡은 비율 · <span class="lb">정밀도</span>불량 판정 중 실제 불량 비율 · <span class="lb">F1</span>정밀도와 재현율을 함께 반영</li>
-          <li><span class="lb">재현율 중심:</span>놓친 불량은 그대로 출하되므로 잡은 비율을 먼저 봄</li>
+          <li><span class="lb">재현율:</span>실제 불량 중 잡은 비율 · <span class="lb">F1:</span>정밀도와 재현율을 함께 반영</li>
+          <li><span class="lb">재현율 중심:</span>놓친 불량은 그대로 통과하므로 정확도보다 먼저 봄</li>
         </ul>
-        <!-- 내용 끝 -->
       </section>
     </div>
 
@@ -431,79 +462,185 @@ L 652.740477 120.024
 
       <section class="sec">
         <h2>4. 결과</h2>
-        <!-- 내용 시작: 평가지표 비교 막대 그래프 · 결과 그래프 · 핵심 수치 3개 -->
-        <div class="fig"><!-- FIG:bars --><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 720.921727 287.3555" xmlns="http://www.w3.org/2000/svg" version="1.1">
+        <div class="fig"><!-- FIG:result --><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 656.340477 261.148" xmlns="http://www.w3.org/2000/svg" version="1.1">
  
  <defs>
   <style type="text/css">*{stroke-linejoin: round; stroke-linecap: butt}</style>
  </defs>
  <g id="figure_1">
   <g id="patch_1">
-   <path d="M 0 287.3555 
-L 720.921727 287.3555 
-L 720.921727 0 
+   <path d="M 0 261.148 
+L 656.340477 261.148 
+L 656.340477 0 
 L 0 0 
-L 0 287.3555 
+L 0 261.148 
 z
 " style="fill: none"/>
   </g>
   <g id="axes_1">
    <g id="patch_2">
-    <path d="M 146.140625 259.477375 
-L 322.431089 259.477375 
+    <path d="M 81.559375 257.548 
+L 652.740477 257.548 
+L 652.740477 24.7 
+L 81.559375 24.7 
+L 81.559375 257.548 
+z
+" style="fill: none"/>
+   </g>
+   <g clip-path="url(#pc4fa353899)">
+    <image xlink:href="data:image/png;base64,
+iVBORw0KGgoAAAANSUhEUgAAAxoAAAFECAYAAACgW0j8AAAG6ElEQVR4nO3ZMQ3CUABFUYqRKiAMzIzdqwcJOEAK6loLDDf5+eQcBW+9ecv78z0uAPCDx20dPQGASVxHDwAAAP6P0AAAAHJCAwAAyAkNAAAgJzQAAICc0AAAAHJCAwAAyAkNAAAgJzQAAICc0AAAAHJCAwAAyAkNAAAgJzQAAICc0AAAAHJCAwAAyAkNAAAgJzQAAICc0AAAAHJCAwAAyAkNAAAgJzQAAICc0AAAAHJCAwAAyAkNAAAgJzQAAICc0AAAAHJCAwAAyAkNAAAgJzQAAICc0AAAAHJCAwAAyAkNAAAgJzQAAICc0AAAAHJCAwAAyAkNAAAgJzQAAICc0AAAAHJCAwAAyAkNAAAgJzQAAICc0AAAAHJCAwAAyAkNAAAgJzQAAICc0AAAAHJCAwAAyAkNAAAgJzQAAICc0AAAAHJCAwAAyAkNAAAgJzQAAICc0AAAAHJCAwAAyAkNAAAgJzQAAICc0AAAAHJCAwAAyAkNAAAgJzQAAICc0AAAAHJCAwAAyAkNAAAgJzQAAICc0AAAAHJCAwAAyAkNAAAgJzQAAICc0AAAAHJCAwAAyAkNAAAgJzQAAICc0AAAAHJCAwAAyAkNAAAgJzQAAICc0AAAAHJCAwAAyAkNAAAgJzQAAICc0AAAAHJCAwAAyAkNAAAgJzQAAICc0AAAAHJCAwAAyAkNAAAgJzQAAICc0AAAAHJCAwAAyAkNAAAgJzQAAICc0AAAAHJCAwAAyAkNAAAgJzQAAICc0AAAAHJCAwAAyAkNAAAgJzQAAICc0AAAAHJCAwAAyAkNAAAgJzQAAICc0AAAAHJCAwAAyAkNAAAgJzQAAICc0AAAAHJCAwAAyAkNAAAgJzQAAICc0AAAAHJCAwAAyAkNAAAgJzQAAICc0AAAAHJCAwAAyAkNAAAgJzQAAICc0AAAAHJCAwAAyAkNAAAgJzQAAICc0AAAAHJCAwAAyAkNAAAgJzQAAICc0AAAAHJCAwAAyAkNAAAgJzQAAICc0AAAAHJCAwAAyAkNAAAgJzQAAICc0AAAAHJCAwAAyAkNAAAgJzQAAICc0AAAAHJCAwAAyAkNAAAgJzQAAICc0AAAAHJCAwAAyAkNAAAgJzQAAICc0AAAAHJCAwAAyAkNAAAgJzQAAICc0AAAAHJCAwAAyAkNAAAgJzQAAICc0AAAAHJCAwAAyAkNAAAgJzQAAIDcsj5fx+gRAMxh3+6jJwAwCY8GAACQExoAAEBOaAAAADmhAQAA5IQGAACQExoAAEBOaAAAADmhAQAA5IQGAACQExoAAEBOaAAAADmhAQAA5IQGAACQExoAAEBOaAAAADmhAQAA5IQGAACQExoAAEBOaAAAADmhAQAA5IQGAACQExoAAEBOaAAAADmhAQAA5IQGAACQExoAAEBOaAAAADmhAQAA5IQGAACQExoAAEBOaAAAADmhAQAA5IQGAACQExoAAEBOaAAAADmhAQAA5IQGAACQExoAAEBOaAAAADmhAQAA5IQGAACQExoAAEBOaAAAADmhAQAA5IQGAACQExoAAEBOaAAAADmhAQAA5IQGAACQExoAAEBOaAAAADmhAQAA5IQGAACQExoAAEBOaAAAADmhAQAA5IQGAACQExoAAEBOaAAAADmhAQAA5IQGAACQExoAAEBOaAAAADmhAQAA5IQGAACQExoAAEBOaAAAADmhAQAA5IQGAACQExoAAEBOaAAAADmhAQAA5IQGAACQExoAAEBOaAAAADmhAQAA5IQGAACQExoAAEBOaAAAADmhAQAA5IQGAACQExoAAEBOaAAAADmhAQAA5IQGAACQExoAAEBOaAAAADmhAQAA5IQGAACQExoAAEBOaAAAADmhAQAA5IQGAACQExoAAEBOaAAAADmhAQAA5IQGAACQExoAAEBOaAAAADmhAQAA5IQGAACQExoAAEBOaAAAADmhAQAA5IQGAACQExoAAEBOaAAAADmhAQAA5IQGAACQExoAAEBOaAAAADmhAQAA5IQGAACQExoAAEBOaAAAADmhAQAA5IQGAACQExoAAEBOaAAAADmhAQAA5IQGAACQExoAAEBOaAAAADmhAQAA5IQGAACQExoAAEBOaAAAADmhAQAA5IQGAACQExoAAEBOaAAAADmhAQAA5IQGAACQExoAAEBOaAAAADmhAQAA5IQGAACQExoAAEBOaAAAADmhAQAA5IQGAACQExoAAEBOaAAAADmhAQAA5IQGAACQExoAAEBOaAAAADmhAQAA5IQGAACQExoAAEBOaAAAADmhAQAA5IQGAACQExoAAEBOaAAAADmhAQAA5IQGAACQExoAAEBOaAAAADmhAQAA5IQGAACQOwEPmAh6KxAVpgAAAABJRU5ErkJggg==" id="imagebbd827bb7a" transform="scale(1 -1) translate(0 -233.28)" x="81.559375" y="-24.268" width="571.68" height="233.28"/>
+   </g>
+   <g id="matplotlib.axis_1">
+    <g id="xtick_1">
+     <g id="line2d_1"/>
+     <g id="text_1">
+      <text style="font-size: 20px; font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: middle" x="224.354651" y="19.08125" transform="rotate(-0 224.354651 19.08125)">예측 양품</text>
+     </g>
+    </g>
+    <g id="xtick_2">
+     <g id="line2d_2"/>
+     <g id="text_2">
+      <text style="font-size: 20px; font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: middle" x="509.945202" y="19.08125" transform="rotate(-0 509.945202 19.08125)">예측 불량</text>
+     </g>
+    </g>
+    <g id="xtick_3">
+     <g id="line2d_3">
+      <path d="M 367.149926 257.548 
+L 367.149926 24.7 
+" clip-path="url(#pc4fa353899)" style="fill: none; stroke: #ffffff; stroke-width: 4; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_4"/>
+    </g>
+   </g>
+   <g id="matplotlib.axis_2">
+    <g id="ytick_1">
+     <g id="line2d_5"/>
+     <g id="text_3">
+      <text style="font-size: 20px; font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: end" x="78.059375" y="90.59325" transform="rotate(-0 78.059375 90.59325)">실제 양품</text>
+     </g>
+    </g>
+    <g id="ytick_2">
+     <g id="line2d_6"/>
+     <g id="text_4">
+      <text style="font-size: 20px; font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: end" x="78.059375" y="207.01725" transform="rotate(-0 78.059375 207.01725)">실제 불량</text>
+     </g>
+    </g>
+    <g id="ytick_3">
+     <g id="line2d_7">
+      <path d="M 81.559375 141.124 
+L 652.740477 141.124 
+" clip-path="url(#pc4fa353899)" style="fill: none; stroke: #ffffff; stroke-width: 4; stroke-linecap: square"/>
+     </g>
+     <g id="line2d_8"/>
+    </g>
+   </g>
+   <g id="text_5">
+    <text style="font-weight: 700; font-size: 48px; font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: middle; fill: #ffffff" x="224.354651" y="87.1396" transform="rotate(-0 224.354651 87.1396)">259장</text>
+   </g>
+   <g id="text_6">
+    <text style="font-size: 20px; font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: middle; fill: #ffffff" x="224.354651" y="118.619563" transform="rotate(-0 224.354651 118.619563)">양품을 양품으로</text>
+   </g>
+   <g id="text_7">
+    <text style="font-weight: 700; font-size: 48px; font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: middle; fill: #ffffff" x="509.945202" y="87.1396" transform="rotate(-0 509.945202 87.1396)">34장</text>
+   </g>
+   <g id="text_8">
+    <text style="font-size: 20px; font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: middle; fill: #ffffff" x="509.945202" y="118.619563" transform="rotate(-0 509.945202 118.619563)">양품을 불량으로</text>
+   </g>
+   <g id="text_9">
+    <text style="font-weight: 700; font-size: 48px; font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: middle" x="224.354651" y="203.5636" transform="rotate(-0 224.354651 203.5636)">17장</text>
+   </g>
+   <g id="text_10">
+    <text style="font-size: 20px; font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: middle" x="224.354651" y="235.084188" transform="rotate(-0 224.354651 235.084188)">불량을 양품으로(놓침)</text>
+   </g>
+   <g id="text_11">
+    <text style="font-weight: 700; font-size: 48px; font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: middle" x="509.945202" y="203.5636" transform="rotate(-0 509.945202 203.5636)">4장</text>
+   </g>
+   <g id="text_12">
+    <text style="font-size: 20px; font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: middle" x="509.945202" y="235.02325" transform="rotate(-0 509.945202 235.02325)">불량을 불량으로(잡음)</text>
+   </g>
+  </g>
+ </g>
+ <defs>
+  <clipPath id="pc4fa353899">
+   <rect x="81.559375" y="24.7" width="571.181102" height="232.848"/>
+  </clipPath>
+ </defs>
+</svg>
+<!-- /FIG:result --></div>
+        <p class="figcap"><span class="no">그림 2.</span>로지스틱 회귀(가중치 켬)의 혼동행렬(시험 314장). 불량 21장 중 17장을 양품으로 판정해 놓침</p>
+        <div class="fig"><!-- FIG:bars --><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 720.921727 265.1795" xmlns="http://www.w3.org/2000/svg" version="1.1">
+ 
+ <defs>
+  <style type="text/css">*{stroke-linejoin: round; stroke-linecap: butt}</style>
+ </defs>
+ <g id="figure_1">
+  <g id="patch_1">
+   <path d="M 0 265.1795 
+L 720.921727 265.1795 
+L 720.921727 0 
+L 0 0 
+L 0 265.1795 
+z
+" style="fill: none"/>
+  </g>
+  <g id="axes_1">
+   <g id="patch_2">
+    <path d="M 146.140625 237.301375 
+L 322.431089 237.301375 
 L 322.431089 26.629375 
 L 146.140625 26.629375 
-L 146.140625 259.477375 
+L 146.140625 237.301375 
 z
 " style="fill: none"/>
    </g>
    <g id="patch_3">
-    <path d="M 146.140625 61.896909 
-L 259.589133 61.896909 
-L 259.589133 37.213375 
-L 146.140625 37.213375 
+    <path d="M 146.140625 58.538096 
+L 259.589133 58.538096 
+L 259.589133 36.205375 
+L 146.140625 36.205375 
 z
-" clip-path="url(#pc8b8002d55)" style="fill: #4a4f57"/>
+" clip-path="url(#pc519340c90)" style="fill: #4a4f57"/>
    </g>
    <g id="patch_4">
-    <path d="M 146.140625 99.296202 
-L 247.973245 99.296202 
-L 247.973245 74.612668 
-L 146.140625 74.612668 
+    <path d="M 146.140625 92.375552 
+L 247.973245 92.375552 
+L 247.973245 70.042831 
+L 146.140625 70.042831 
 z
-" clip-path="url(#pc8b8002d55)" style="fill: #1f3d7a"/>
+" clip-path="url(#pc519340c90)" style="fill: #1f3d7a"/>
    </g>
    <g id="patch_5">
-    <path d="M 146.140625 136.695495 
-L 259.589133 136.695495 
-L 259.589133 112.011962 
-L 146.140625 112.011962 
+    <path d="M 146.140625 126.213008 
+L 259.589133 126.213008 
+L 259.589133 103.880287 
+L 146.140625 103.880287 
 z
-" clip-path="url(#pc8b8002d55)" style="fill: #9aa0aa"/>
+" clip-path="url(#pc519340c90)" style="fill: #9aa0aa"/>
    </g>
    <g id="patch_6">
-    <path d="M 146.140625 174.094788 
-L 225.903058 174.094788 
-L 225.903058 149.411255 
-L 146.140625 149.411255 
+    <path d="M 146.140625 160.050463 
+L 225.903058 160.050463 
+L 225.903058 137.717742 
+L 146.140625 137.717742 
 z
-" clip-path="url(#pc8b8002d55)" style="fill: #9aa0aa"/>
+" clip-path="url(#pc519340c90)" style="fill: #9aa0aa"/>
    </g>
    <g id="patch_7">
-    <path d="M 146.140625 211.494082 
-L 259.589133 211.494082 
-L 259.589133 186.810548 
-L 146.140625 186.810548 
+    <path d="M 146.140625 193.887919 
+L 259.589133 193.887919 
+L 259.589133 171.555198 
+L 146.140625 171.555198 
 z
-" clip-path="url(#pc8b8002d55)" style="fill: #9aa0aa"/>
+" clip-path="url(#pc519340c90)" style="fill: #9aa0aa"/>
    </g>
    <g id="patch_8">
-    <path d="M 146.140625 248.893375 
-L 259.201937 248.893375 
-L 259.201937 224.209841 
-L 146.140625 224.209841 
+    <path d="M 146.140625 227.725375 
+L 259.201937 227.725375 
+L 259.201937 205.392654 
+L 146.140625 205.392654 
 z
-" clip-path="url(#pc8b8002d55)" style="fill: #9aa0aa"/>
+" clip-path="url(#pc519340c90)" style="fill: #9aa0aa"/>
    </g>
    <g id="matplotlib.axis_1">
     <g id="xtick_1">
@@ -514,31 +651,31 @@ L 0 3.5
 " style="stroke: #000000; stroke-width: 0.8"/>
       </defs>
       <g>
-       <use xlink:href="#me6267705f3" x="146.140625" y="259.477375" style="stroke: #000000; stroke-width: 0.8"/>
+       <use xlink:href="#me6267705f3" x="146.140625" y="237.301375" style="stroke: #000000; stroke-width: 0.8"/>
       </g>
      </g>
      <g id="text_1">
-      <text style="font-size: 20px; font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: middle" x="146.140625" y="281.63675" transform="rotate(-0 146.140625 281.63675)">0</text>
+      <text style="font-size: 20px; font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: middle" x="146.140625" y="259.46075" transform="rotate(-0 146.140625 259.46075)">0</text>
      </g>
     </g>
     <g id="xtick_2">
      <g id="line2d_2">
       <g>
-       <use xlink:href="#me6267705f3" x="206.93044" y="259.477375" style="stroke: #000000; stroke-width: 0.8"/>
+       <use xlink:href="#me6267705f3" x="206.93044" y="237.301375" style="stroke: #000000; stroke-width: 0.8"/>
       </g>
      </g>
      <g id="text_2">
-      <text style="font-size: 20px; font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: middle" x="206.93044" y="281.63675" transform="rotate(-0 206.93044 281.63675)">0.5</text>
+      <text style="font-size: 20px; font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: middle" x="206.93044" y="259.46075" transform="rotate(-0 206.93044 259.46075)">0.5</text>
      </g>
     </g>
     <g id="xtick_3">
      <g id="line2d_3">
       <g>
-       <use xlink:href="#me6267705f3" x="267.720255" y="259.477375" style="stroke: #000000; stroke-width: 0.8"/>
+       <use xlink:href="#me6267705f3" x="267.720255" y="237.301375" style="stroke: #000000; stroke-width: 0.8"/>
       </g>
      </g>
      <g id="text_3">
-      <text style="font-size: 20px; font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: middle" x="267.720255" y="281.63675" transform="rotate(-0 267.720255 281.63675)">1</text>
+      <text style="font-size: 20px; font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: middle" x="267.720255" y="259.46075" transform="rotate(-0 267.720255 259.46075)">1</text>
      </g>
     </g>
    </g>
@@ -546,62 +683,62 @@ L 0 3.5
     <g id="ytick_1">
      <g id="line2d_4"/>
      <g id="text_4">
-      <text style="font-size: 20px; font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: end" x="142.640625" y="57.245767" transform="rotate(-0 142.640625 57.245767)">기준선(전부 양품)</text>
+      <text style="font-size: 20px; font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: end" x="142.640625" y="55.06236" transform="rotate(-0 142.640625 55.06236)">기준선(전부 양품)</text>
      </g>
     </g>
     <g id="ytick_2">
      <g id="line2d_5"/>
      <g id="text_5">
-      <text style="font-weight: 700; font-size: 20px; font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: end; fill: #1f3d7a" x="142.640625" y="94.635685" transform="rotate(-0 142.640625 94.635685)">로지스틱(선택)</text>
+      <text style="font-weight: 700; font-size: 20px; font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: end; fill: #1f3d7a" x="142.640625" y="88.890441" transform="rotate(-0 142.640625 88.890441)">로지스틱(선택)</text>
      </g>
     </g>
     <g id="ytick_3">
      <g id="line2d_6"/>
      <g id="text_6">
-      <text style="font-size: 20px; font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: end" x="142.640625" y="131.933416" transform="rotate(-0 142.640625 131.933416)">k-NN(k=5)</text>
+      <text style="font-size: 20px; font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: end" x="142.640625" y="122.626335" transform="rotate(-0 142.640625 122.626335)">k-NN(k=5)</text>
      </g>
     </g>
     <g id="ytick_4">
      <g id="line2d_7"/>
      <g id="text_7">
-      <text style="font-size: 20px; font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: end" x="142.640625" y="169.434272" transform="rotate(-0 142.640625 169.434272)">결정 트리(깊이 4)</text>
+      <text style="font-size: 20px; font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: end" x="142.640625" y="156.565353" transform="rotate(-0 142.640625 156.565353)">결정 트리(깊이 4)</text>
      </g>
     </g>
     <g id="ytick_5">
      <g id="line2d_8"/>
      <g id="text_8">
-      <text style="font-size: 20px; font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: end" x="142.640625" y="206.833565" transform="rotate(-0 142.640625 206.833565)">랜덤 포레스트</text>
+      <text style="font-size: 20px; font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: end" x="142.640625" y="190.402809" transform="rotate(-0 142.640625 190.402809)">랜덤 포레스트</text>
      </g>
     </g>
     <g id="ytick_6">
      <g id="line2d_9"/>
      <g id="text_9">
-      <text style="font-size: 20px; font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: end" x="142.640625" y="244.131296" transform="rotate(-0 142.640625 244.131296)">XGBoost</text>
+      <text style="font-size: 20px; font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: end" x="142.640625" y="224.138702" transform="rotate(-0 142.640625 224.138702)">XGBoost</text>
      </g>
     </g>
    </g>
    <g id="patch_9">
-    <path d="M 146.140625 259.477375 
-L 322.431089 259.477375 
+    <path d="M 146.140625 237.301375 
+L 322.431089 237.301375 
 " style="fill: none; stroke: #000000; stroke-width: 1.2; stroke-linejoin: miter; stroke-linecap: square"/>
    </g>
    <g id="text_10">
-    <text style="font-size: 20px; font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: start" x="262.020726" y="56.075454" transform="rotate(-0 262.020726 56.075454)">0.933</text>
+    <text style="font-size: 20px; font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: start" x="262.020726" y="53.892048" transform="rotate(-0 262.020726 53.892048)">0.933</text>
    </g>
    <g id="text_11">
-    <text style="font-weight: 700; font-size: 20px; font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: start; fill: #1f3d7a" x="250.404838" y="93.474748" transform="rotate(-0 250.404838 93.474748)">0.838</text>
+    <text style="font-weight: 700; font-size: 20px; font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: start; fill: #1f3d7a" x="250.404838" y="87.729504" transform="rotate(-0 250.404838 87.729504)">0.838</text>
    </g>
    <g id="text_12">
-    <text style="font-size: 20px; font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: start" x="262.020726" y="130.874041" transform="rotate(-0 262.020726 130.874041)">0.933</text>
+    <text style="font-size: 20px; font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: start" x="262.020726" y="121.56696" transform="rotate(-0 262.020726 121.56696)">0.933</text>
    </g>
    <g id="text_13">
-    <text style="font-size: 20px; font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: start" x="228.33465" y="168.273334" transform="rotate(-0 228.33465 168.273334)">0.656</text>
+    <text style="font-size: 20px; font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: start" x="228.33465" y="155.404415" transform="rotate(-0 228.33465 155.404415)">0.656</text>
    </g>
    <g id="text_14">
-    <text style="font-size: 20px; font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: start" x="262.020726" y="205.672627" transform="rotate(-0 262.020726 205.672627)">0.933</text>
+    <text style="font-size: 20px; font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: start" x="262.020726" y="189.241871" transform="rotate(-0 262.020726 189.241871)">0.933</text>
    </g>
    <g id="text_15">
-    <text style="font-size: 20px; font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: start" x="261.63353" y="243.071921" transform="rotate(-0 261.63353 243.071921)">0.930</text>
+    <text style="font-size: 20px; font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: start" x="261.63353" y="223.079327" transform="rotate(-0 261.63353 223.079327)">0.930</text>
    </g>
    <g id="text_16">
     <text style="font-weight: 700; font-size: 22px; font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: start" x="146.140625" y="20.629375" transform="rotate(-0 146.140625 20.629375)">정확도</text>
@@ -609,91 +746,91 @@ L 322.431089 259.477375
   </g>
   <g id="axes_2">
    <g id="patch_10">
-    <path d="M 343.585944 259.477375 
-L 519.876408 259.477375 
+    <path d="M 343.585944 237.301375 
+L 519.876408 237.301375 
 L 519.876408 26.629375 
 L 343.585944 26.629375 
-L 343.585944 259.477375 
+L 343.585944 237.301375 
 z
 " style="fill: none"/>
    </g>
    <g id="patch_11">
-    <path d="M 343.585944 61.896909 
-L 343.585944 61.896909 
-L 343.585944 37.213375 
-L 343.585944 37.213375 
+    <path d="M 343.585944 58.538096 
+L 343.585944 58.538096 
+L 343.585944 36.205375 
+L 343.585944 36.205375 
 z
-" clip-path="url(#p7def3a41cd)" style="fill: #4a4f57"/>
+" clip-path="url(#p2033099104)" style="fill: #4a4f57"/>
    </g>
    <g id="patch_12">
-    <path d="M 343.585944 99.296202 
-L 366.743969 99.296202 
-L 366.743969 74.612668 
-L 343.585944 74.612668 
+    <path d="M 343.585944 92.375552 
+L 366.743969 92.375552 
+L 366.743969 70.042831 
+L 343.585944 70.042831 
 z
-" clip-path="url(#p7def3a41cd)" style="fill: #1f3d7a"/>
+" clip-path="url(#p2033099104)" style="fill: #1f3d7a"/>
    </g>
    <g id="patch_13">
-    <path d="M 343.585944 136.695495 
-L 349.375451 136.695495 
-L 349.375451 112.011962 
-L 343.585944 112.011962 
+    <path d="M 343.585944 126.213008 
+L 349.375451 126.213008 
+L 349.375451 103.880287 
+L 343.585944 103.880287 
 z
-" clip-path="url(#p7def3a41cd)" style="fill: #9aa0aa"/>
+" clip-path="url(#p2033099104)" style="fill: #9aa0aa"/>
    </g>
    <g id="patch_14">
-    <path d="M 343.585944 174.094788 
-L 389.901994 174.094788 
-L 389.901994 149.411255 
-L 343.585944 149.411255 
+    <path d="M 343.585944 160.050463 
+L 389.901994 160.050463 
+L 389.901994 137.717742 
+L 343.585944 137.717742 
 z
-" clip-path="url(#p7def3a41cd)" style="fill: #9aa0aa"/>
+" clip-path="url(#p2033099104)" style="fill: #9aa0aa"/>
    </g>
    <g id="patch_15">
-    <path d="M 343.585944 211.494082 
-L 343.585944 211.494082 
-L 343.585944 186.810548 
-L 343.585944 186.810548 
+    <path d="M 343.585944 193.887919 
+L 343.585944 193.887919 
+L 343.585944 171.555198 
+L 343.585944 171.555198 
 z
-" clip-path="url(#p7def3a41cd)" style="fill: #9aa0aa"/>
+" clip-path="url(#p2033099104)" style="fill: #9aa0aa"/>
    </g>
    <g id="patch_16">
-    <path d="M 343.585944 248.893375 
-L 343.585944 248.893375 
-L 343.585944 224.209841 
-L 343.585944 224.209841 
+    <path d="M 343.585944 227.725375 
+L 343.585944 227.725375 
+L 343.585944 205.392654 
+L 343.585944 205.392654 
 z
-" clip-path="url(#p7def3a41cd)" style="fill: #9aa0aa"/>
+" clip-path="url(#p2033099104)" style="fill: #9aa0aa"/>
    </g>
    <g id="matplotlib.axis_3">
     <g id="xtick_4">
      <g id="line2d_10">
       <g>
-       <use xlink:href="#me6267705f3" x="343.585944" y="259.477375" style="stroke: #000000; stroke-width: 0.8"/>
+       <use xlink:href="#me6267705f3" x="343.585944" y="237.301375" style="stroke: #000000; stroke-width: 0.8"/>
       </g>
      </g>
      <g id="text_17">
-      <text style="font-size: 20px; font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: middle" x="343.585944" y="281.63675" transform="rotate(-0 343.585944 281.63675)">0</text>
+      <text style="font-size: 20px; font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: middle" x="343.585944" y="259.46075" transform="rotate(-0 343.585944 259.46075)">0</text>
      </g>
     </g>
     <g id="xtick_5">
      <g id="line2d_11">
       <g>
-       <use xlink:href="#me6267705f3" x="404.375759" y="259.477375" style="stroke: #000000; stroke-width: 0.8"/>
+       <use xlink:href="#me6267705f3" x="404.375759" y="237.301375" style="stroke: #000000; stroke-width: 0.8"/>
       </g>
      </g>
      <g id="text_18">
-      <text style="font-size: 20px; font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: middle" x="404.375759" y="281.63675" transform="rotate(-0 404.375759 281.63675)">0.5</text>
+      <text style="font-size: 20px; font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: middle" x="404.375759" y="259.46075" transform="rotate(-0 404.375759 259.46075)">0.5</text>
      </g>
     </g>
     <g id="xtick_6">
      <g id="line2d_12">
       <g>
-       <use xlink:href="#me6267705f3" x="465.165574" y="259.477375" style="stroke: #000000; stroke-width: 0.8"/>
+       <use xlink:href="#me6267705f3" x="465.165574" y="237.301375" style="stroke: #000000; stroke-width: 0.8"/>
       </g>
      </g>
      <g id="text_19">
-      <text style="font-size: 20px; font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: middle" x="465.165574" y="281.63675" transform="rotate(-0 465.165574 281.63675)">1</text>
+      <text style="font-size: 20px; font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: middle" x="465.165574" y="259.46075" transform="rotate(-0 465.165574 259.46075)">1</text>
      </g>
     </g>
    </g>
@@ -718,27 +855,27 @@ z
     </g>
    </g>
    <g id="patch_17">
-    <path d="M 343.585944 259.477375 
-L 519.876408 259.477375 
+    <path d="M 343.585944 237.301375 
+L 519.876408 237.301375 
 " style="fill: none; stroke: #000000; stroke-width: 1.2; stroke-linejoin: miter; stroke-linecap: square"/>
    </g>
    <g id="text_20">
-    <text style="font-size: 20px; font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: start" x="346.017537" y="56.075454" transform="rotate(-0 346.017537 56.075454)">0.000</text>
+    <text style="font-size: 20px; font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: start" x="346.017537" y="53.892048" transform="rotate(-0 346.017537 53.892048)">0.000</text>
    </g>
    <g id="text_21">
-    <text style="font-weight: 700; font-size: 20px; font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: start; fill: #1f3d7a" x="369.175562" y="93.474748" transform="rotate(-0 369.175562 93.474748)">0.190</text>
+    <text style="font-weight: 700; font-size: 20px; font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: start; fill: #1f3d7a" x="369.175562" y="87.729504" transform="rotate(-0 369.175562 87.729504)">0.190</text>
    </g>
    <g id="text_22">
-    <text style="font-size: 20px; font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: start" x="351.807043" y="130.874041" transform="rotate(-0 351.807043 130.874041)">0.048</text>
+    <text style="font-size: 20px; font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: start" x="351.807043" y="121.56696" transform="rotate(-0 351.807043 121.56696)">0.048</text>
    </g>
    <g id="text_23">
-    <text style="font-size: 20px; font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: start" x="392.333587" y="168.273334" transform="rotate(-0 392.333587 168.273334)">0.381</text>
+    <text style="font-size: 20px; font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: start" x="392.333587" y="155.404415" transform="rotate(-0 392.333587 155.404415)">0.381</text>
    </g>
    <g id="text_24">
-    <text style="font-size: 20px; font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: start" x="346.017537" y="205.672627" transform="rotate(-0 346.017537 205.672627)">0.000</text>
+    <text style="font-size: 20px; font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: start" x="346.017537" y="189.241871" transform="rotate(-0 346.017537 189.241871)">0.000</text>
    </g>
    <g id="text_25">
-    <text style="font-size: 20px; font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: start" x="346.017537" y="243.071921" transform="rotate(-0 346.017537 243.071921)">0.000</text>
+    <text style="font-size: 20px; font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: start" x="346.017537" y="223.079327" transform="rotate(-0 346.017537 223.079327)">0.000</text>
    </g>
    <g id="text_26">
     <text style="font-weight: 700; font-size: 22px; font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: start" x="343.585944" y="20.629375" transform="rotate(-0 343.585944 20.629375)">재현율</text>
@@ -746,91 +883,91 @@ L 519.876408 259.477375
   </g>
   <g id="axes_3">
    <g id="patch_18">
-    <path d="M 541.031264 259.477375 
-L 717.321727 259.477375 
+    <path d="M 541.031264 237.301375 
+L 717.321727 237.301375 
 L 717.321727 26.629375 
 L 541.031264 26.629375 
-L 541.031264 259.477375 
+L 541.031264 237.301375 
 z
 " style="fill: none"/>
    </g>
    <g id="patch_19">
-    <path d="M 541.031264 61.896909 
-L 541.031264 61.896909 
-L 541.031264 37.213375 
-L 541.031264 37.213375 
+    <path d="M 541.031264 58.538096 
+L 541.031264 58.538096 
+L 541.031264 36.205375 
+L 541.031264 36.205375 
 z
-" clip-path="url(#p380545e996)" style="fill: #4a4f57"/>
+" clip-path="url(#p522c8d25ff)" style="fill: #4a4f57"/>
    </g>
    <g id="patch_20">
-    <path d="M 541.031264 99.296202 
-L 557.516637 99.296202 
-L 557.516637 74.612668 
-L 541.031264 74.612668 
+    <path d="M 541.031264 92.375552 
+L 557.516637 92.375552 
+L 557.516637 70.042831 
+L 541.031264 70.042831 
 z
-" clip-path="url(#p380545e996)" style="fill: #1f3d7a"/>
+" clip-path="url(#p522c8d25ff)" style="fill: #1f3d7a"/>
    </g>
    <g id="patch_21">
-    <path d="M 541.031264 136.695495 
-L 551.603405 136.695495 
-L 551.603405 112.011962 
-L 541.031264 112.011962 
+    <path d="M 541.031264 126.213008 
+L 551.603405 126.213008 
+L 551.603405 103.880287 
+L 541.031264 103.880287 
 z
-" clip-path="url(#p380545e996)" style="fill: #9aa0aa"/>
+" clip-path="url(#p522c8d25ff)" style="fill: #9aa0aa"/>
    </g>
    <g id="patch_22">
-    <path d="M 541.031264 174.094788 
-L 556.718958 174.094788 
-L 556.718958 149.411255 
-L 541.031264 149.411255 
+    <path d="M 541.031264 160.050463 
+L 556.718958 160.050463 
+L 556.718958 137.717742 
+L 541.031264 137.717742 
 z
-" clip-path="url(#p380545e996)" style="fill: #9aa0aa"/>
+" clip-path="url(#p522c8d25ff)" style="fill: #9aa0aa"/>
    </g>
    <g id="patch_23">
-    <path d="M 541.031264 211.494082 
-L 541.031264 211.494082 
-L 541.031264 186.810548 
-L 541.031264 186.810548 
+    <path d="M 541.031264 193.887919 
+L 541.031264 193.887919 
+L 541.031264 171.555198 
+L 541.031264 171.555198 
 z
-" clip-path="url(#p380545e996)" style="fill: #9aa0aa"/>
+" clip-path="url(#p522c8d25ff)" style="fill: #9aa0aa"/>
    </g>
    <g id="patch_24">
-    <path d="M 541.031264 248.893375 
-L 541.031264 248.893375 
-L 541.031264 224.209841 
-L 541.031264 224.209841 
+    <path d="M 541.031264 227.725375 
+L 541.031264 227.725375 
+L 541.031264 205.392654 
+L 541.031264 205.392654 
 z
-" clip-path="url(#p380545e996)" style="fill: #9aa0aa"/>
+" clip-path="url(#p522c8d25ff)" style="fill: #9aa0aa"/>
    </g>
    <g id="matplotlib.axis_5">
     <g id="xtick_7">
      <g id="line2d_19">
       <g>
-       <use xlink:href="#me6267705f3" x="541.031264" y="259.477375" style="stroke: #000000; stroke-width: 0.8"/>
+       <use xlink:href="#me6267705f3" x="541.031264" y="237.301375" style="stroke: #000000; stroke-width: 0.8"/>
       </g>
      </g>
      <g id="text_27">
-      <text style="font-size: 20px; font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: middle" x="541.031264" y="281.63675" transform="rotate(-0 541.031264 281.63675)">0</text>
+      <text style="font-size: 20px; font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: middle" x="541.031264" y="259.46075" transform="rotate(-0 541.031264 259.46075)">0</text>
      </g>
     </g>
     <g id="xtick_8">
      <g id="line2d_20">
       <g>
-       <use xlink:href="#me6267705f3" x="601.821079" y="259.477375" style="stroke: #000000; stroke-width: 0.8"/>
+       <use xlink:href="#me6267705f3" x="601.821079" y="237.301375" style="stroke: #000000; stroke-width: 0.8"/>
       </g>
      </g>
      <g id="text_28">
-      <text style="font-size: 20px; font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: middle" x="601.821079" y="281.63675" transform="rotate(-0 601.821079 281.63675)">0.5</text>
+      <text style="font-size: 20px; font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: middle" x="601.821079" y="259.46075" transform="rotate(-0 601.821079 259.46075)">0.5</text>
      </g>
     </g>
     <g id="xtick_9">
      <g id="line2d_21">
       <g>
-       <use xlink:href="#me6267705f3" x="662.610894" y="259.477375" style="stroke: #000000; stroke-width: 0.8"/>
+       <use xlink:href="#me6267705f3" x="662.610894" y="237.301375" style="stroke: #000000; stroke-width: 0.8"/>
       </g>
      </g>
      <g id="text_29">
-      <text style="font-size: 20px; font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: middle" x="662.610894" y="281.63675" transform="rotate(-0 662.610894 281.63675)">1</text>
+      <text style="font-size: 20px; font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: middle" x="662.610894" y="259.46075" transform="rotate(-0 662.610894 259.46075)">1</text>
      </g>
     </g>
    </g>
@@ -855,27 +992,27 @@ z
     </g>
    </g>
    <g id="patch_25">
-    <path d="M 541.031264 259.477375 
-L 717.321727 259.477375 
+    <path d="M 541.031264 237.301375 
+L 717.321727 237.301375 
 " style="fill: none; stroke: #000000; stroke-width: 1.2; stroke-linejoin: miter; stroke-linecap: square"/>
    </g>
    <g id="text_30">
-    <text style="font-size: 20px; font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: start" x="543.462856" y="56.075454" transform="rotate(-0 543.462856 56.075454)">0.000</text>
+    <text style="font-size: 20px; font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: start" x="543.462856" y="53.892048" transform="rotate(-0 543.462856 53.892048)">0.000</text>
    </g>
    <g id="text_31">
-    <text style="font-weight: 700; font-size: 20px; font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: start; fill: #1f3d7a" x="559.94823" y="93.474748" transform="rotate(-0 559.94823 93.474748)">0.136</text>
+    <text style="font-weight: 700; font-size: 20px; font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: start; fill: #1f3d7a" x="559.94823" y="87.729504" transform="rotate(-0 559.94823 87.729504)">0.136</text>
    </g>
    <g id="text_32">
-    <text style="font-size: 20px; font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: start" x="554.034998" y="130.874041" transform="rotate(-0 554.034998 130.874041)">0.087</text>
+    <text style="font-size: 20px; font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: start" x="554.034998" y="121.56696" transform="rotate(-0 554.034998 121.56696)">0.087</text>
    </g>
    <g id="text_33">
-    <text style="font-size: 20px; font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: start" x="559.15055" y="168.273334" transform="rotate(-0 559.15055 168.273334)">0.129</text>
+    <text style="font-size: 20px; font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: start" x="559.15055" y="155.404415" transform="rotate(-0 559.15055 155.404415)">0.129</text>
    </g>
    <g id="text_34">
-    <text style="font-size: 20px; font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: start" x="543.462856" y="205.672627" transform="rotate(-0 543.462856 205.672627)">0.000</text>
+    <text style="font-size: 20px; font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: start" x="543.462856" y="189.241871" transform="rotate(-0 543.462856 189.241871)">0.000</text>
    </g>
    <g id="text_35">
-    <text style="font-size: 20px; font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: start" x="543.462856" y="243.071921" transform="rotate(-0 543.462856 243.071921)">0.000</text>
+    <text style="font-size: 20px; font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: start" x="543.462856" y="223.079327" transform="rotate(-0 543.462856 223.079327)">0.000</text>
    </g>
    <g id="text_36">
     <text style="font-weight: 700; font-size: 22px; font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: start" x="541.031264" y="20.629375" transform="rotate(-0 541.031264 20.629375)">F1</text>
@@ -883,162 +1020,44 @@ L 717.321727 259.477375
   </g>
  </g>
  <defs>
-  <clipPath id="pc8b8002d55">
-   <rect x="146.140625" y="26.629375" width="176.290464" height="232.848"/>
+  <clipPath id="pc519340c90">
+   <rect x="146.140625" y="26.629375" width="176.290464" height="210.672"/>
   </clipPath>
-  <clipPath id="p7def3a41cd">
-   <rect x="343.585944" y="26.629375" width="176.290464" height="232.848"/>
+  <clipPath id="p2033099104">
+   <rect x="343.585944" y="26.629375" width="176.290464" height="210.672"/>
   </clipPath>
-  <clipPath id="p380545e996">
-   <rect x="541.031264" y="26.629375" width="176.290464" height="232.848"/>
+  <clipPath id="p522c8d25ff">
+   <rect x="541.031264" y="26.629375" width="176.290464" height="210.672"/>
   </clipPath>
  </defs>
 </svg>
 <!-- /FIG:bars --></div>
-        <p class="cap">시험 데이터 314장(불량 21장) 기준 · 정확도 0.93대인 세 모델은 불량을 0~1장만 잡음</p>
-        <div class="fig"><!-- FIG:result --><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 656.340477 222.34" xmlns="http://www.w3.org/2000/svg" version="1.1">
- 
- <defs>
-  <style type="text/css">*{stroke-linejoin: round; stroke-linecap: butt}</style>
- </defs>
- <g id="figure_1">
-  <g id="patch_1">
-   <path d="M 0 222.34 
-L 656.340477 222.34 
-L 656.340477 -0 
-L 0 -0 
-L 0 222.34 
-z
-" style="fill: none"/>
-  </g>
-  <g id="axes_1">
-   <g id="patch_2">
-    <path d="M 81.559375 218.74 
-L 652.740477 218.74 
-L 652.740477 24.7 
-L 81.559375 24.7 
-L 81.559375 218.74 
-z
-" style="fill: none"/>
-   </g>
-   <g clip-path="url(#p7c0210e201)">
-    <image xlink:href="data:image/png;base64,
-iVBORw0KGgoAAAANSUhEUgAAAxoAAAEOCAYAAAAOmGH2AAAFzElEQVR4nO3ZMQ3CUABFUYqRKiAMzIzdqwcJOEAK6loLDDf5+eQcBW+9ecv78z0uAPCDx20dPQGASVxHDwAAAP6P0AAAAHJCAwAAyAkNAAAgJzQAAICc0AAAAHJCAwAAyAkNAAAgJzQAAICc0AAAAHJCAwAAyAkNAAAgJzQAAICc0AAAAHJCAwAAyAkNAAAgJzQAAICc0AAAAHJCAwAAyAkNAAAgJzQAAICc0AAAAHJCAwAAyAkNAAAgJzQAAICc0AAAAHJCAwAAyAkNAAAgJzQAAICc0AAAAHJCAwAAyAkNAAAgJzQAAICc0AAAAHJCAwAAyAkNAAAgJzQAAICc0AAAAHJCAwAAyAkNAAAgJzQAAICc0AAAAHJCAwAAyAkNAAAgJzQAAICc0AAAAHJCAwAAyAkNAAAgJzQAAICc0AAAAHJCAwAAyAkNAAAgJzQAAICc0AAAAHJCAwAAyAkNAAAgJzQAAICc0AAAAHJCAwAAyAkNAAAgJzQAAICc0AAAAHJCAwAAyAkNAAAgJzQAAICc0AAAAHJCAwAAyAkNAAAgJzQAAICc0AAAAHJCAwAAyAkNAAAgJzQAAICc0AAAAHJCAwAAyAkNAAAgJzQAAICc0AAAAHJCAwAAyAkNAAAgJzQAAICc0AAAAHJCAwAAyAkNAAAgJzQAAICc0AAAAHJCAwAAyAkNAAAgJzQAAICc0AAAAHJCAwAAyAkNAAAgJzQAAICc0AAAAHJCAwAAyAkNAAAgJzQAAICc0AAAAHJCAwAAyAkNAAAgJzQAAICc0AAAAHJCAwAAyAkNAAAgJzQAAICc0AAAAHJCAwAAyAkNAAAgJzQAAICc0AAAAHJCAwAAyAkNAAAgJzQAAICc0AAAAHJCAwAAyAkNAAAgJzQAAICc0AAAAHJCAwAAyAkNAAAgJzQAAICc0AAAAHJCAwAAyAkNAAAgJzQAAICc0AAAAHJCAwAAyAkNAAAgJzQAAICc0AAAAHJCAwAAyAkNAAAgJzQAAICc0AAAAHLL+nwdo0cAMId9u4+eAMAkPBoAAEBOaAAAADmhAQAA5IQGAACQExoAAEBOaAAAADmhAQAA5IQGAACQExoAAEBOaAAAADmhAQAA5IQGAACQExoAAEBOaAAAADmhAQAA5IQGAACQExoAAEBOaAAAADmhAQAA5IQGAACQExoAAEBOaAAAADmhAQAA5IQGAACQExoAAEBOaAAAADmhAQAA5IQGAACQExoAAEBOaAAAADmhAQAA5IQGAACQExoAAEBOaAAAADmhAQAA5IQGAACQExoAAEBOaAAAADmhAQAA5IQGAACQExoAAEBOaAAAADmhAQAA5IQGAACQExoAAEBOaAAAADmhAQAA5IQGAACQExoAAEBOaAAAADmhAQAA5IQGAACQExoAAEBOaAAAADmhAQAA5IQGAACQExoAAEBOaAAAADmhAQAA5IQGAACQExoAAEBOaAAAADmhAQAA5IQGAACQExoAAEBOaAAAADmhAQAA5IQGAACQExoAAEBOaAAAADmhAQAA5IQGAACQExoAAEBOaAAAADmhAQAA5IQGAACQExoAAEBOaAAAADmhAQAA5IQGAACQExoAAEBOaAAAADmhAQAA5IQGAACQExoAAEBOaAAAADmhAQAA5IQGAACQExoAAEBOaAAAADmhAQAA5IQGAACQExoAAEBOaAAAADmhAQAA5IQGAACQExoAAEBOaAAAADmhAQAA5IQGAACQExoAAEBOaAAAADmhAQAA5IQGAACQExoAAEBOaAAAADmhAQAA5IQGAACQExoAAEBOaAAAADmhAQAA5IQGAACQExoAAEBOaAAAADmhAQAA5IQGAACQExoAAEBOaAAAADmhAQAA5IQGAACQExoAAEBOaAAAADmhAQAA5IQGAACQExoAAEBOaAAAADmhAQAA5IQGAACQExoAAEBOaAAAADmhAQAA5IQGAACQExoAAEBOaAAAALkTRsQIDjqnnuMAAAAASUVORK5CYII=" id="image6101eb1512" transform="scale(1 -1) translate(0 -194.4)" x="81.559375" y="-24.34" width="571.68" height="194.4"/>
-   </g>
-   <g id="matplotlib.axis_1">
-    <g id="xtick_1">
-     <g id="line2d_1"/>
-     <g id="text_1">
-      <text style="font-size: 20px; font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: middle" x="224.354651" y="19.08125" transform="rotate(-0 224.354651 19.08125)">예측 양품</text>
-     </g>
-    </g>
-    <g id="xtick_2">
-     <g id="line2d_2"/>
-     <g id="text_2">
-      <text style="font-size: 20px; font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: middle" x="509.945202" y="19.08125" transform="rotate(-0 509.945202 19.08125)">예측 불량</text>
-     </g>
-    </g>
-    <g id="xtick_3">
-     <g id="line2d_3">
-      <path d="M 367.149926 218.74 
-L 367.149926 24.7 
-" clip-path="url(#p7c0210e201)" style="fill: none; stroke: #ffffff; stroke-width: 4; stroke-linecap: square"/>
-     </g>
-     <g id="line2d_4"/>
-    </g>
-   </g>
-   <g id="matplotlib.axis_2">
-    <g id="ytick_1">
-     <g id="line2d_5"/>
-     <g id="text_3">
-      <text style="font-size: 20px; font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: end" x="78.059375" y="80.89125" transform="rotate(-0 78.059375 80.89125)">실제 양품</text>
-     </g>
-    </g>
-    <g id="ytick_2">
-     <g id="line2d_6"/>
-     <g id="text_4">
-      <text style="font-size: 20px; font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: end" x="78.059375" y="177.91125" transform="rotate(-0 78.059375 177.91125)">실제 불량</text>
-     </g>
-    </g>
-    <g id="ytick_3">
-     <g id="line2d_7">
-      <path d="M 81.559375 121.72 
-L 652.740477 121.72 
-" clip-path="url(#p7c0210e201)" style="fill: none; stroke: #ffffff; stroke-width: 4; stroke-linecap: square"/>
-     </g>
-     <g id="line2d_8"/>
-    </g>
-   </g>
-   <g id="text_5">
-    <text style="font-weight: 700; font-size: 40px; font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: middle; fill: #ffffff" x="224.354651" y="76.733" transform="rotate(-0 224.354651 76.733)">259장</text>
-   </g>
-   <g id="text_6">
-    <text style="font-size: 20px; font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: middle; fill: #ffffff" x="224.354651" y="104.066562" transform="rotate(-0 224.354651 104.066562)">양품을 양품으로</text>
-   </g>
-   <g id="text_7">
-    <text style="font-weight: 700; font-size: 40px; font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: middle; fill: #ffffff" x="509.945202" y="76.733" transform="rotate(-0 509.945202 76.733)">34장</text>
-   </g>
-   <g id="text_8">
-    <text style="font-size: 20px; font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: middle; fill: #ffffff" x="509.945202" y="104.066562" transform="rotate(-0 509.945202 104.066562)">양품을 불량으로</text>
-   </g>
-   <g id="text_9">
-    <text style="font-weight: 700; font-size: 40px; font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: middle" x="224.354651" y="173.753" transform="rotate(-0 224.354651 173.753)">17장</text>
-   </g>
-   <g id="text_10">
-    <text style="font-size: 20px; font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: middle" x="224.354651" y="201.127187" transform="rotate(-0 224.354651 201.127187)">불량을 양품으로(놓침)</text>
-   </g>
-   <g id="text_11">
-    <text style="font-weight: 700; font-size: 40px; font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: middle" x="509.945202" y="173.753" transform="rotate(-0 509.945202 173.753)">4장</text>
-   </g>
-   <g id="text_12">
-    <text style="font-size: 20px; font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', 'DejaVu Sans', 'Bitstream Vera Sans', 'Computer Modern Sans Serif', 'Lucida Grande', 'Verdana', 'Geneva', 'Lucid', 'Arial', 'Helvetica', 'Avant Garde', sans-serif; text-anchor: middle" x="509.945202" y="201.06625" transform="rotate(-0 509.945202 201.06625)">불량을 불량으로(잡음)</text>
-   </g>
-  </g>
- </g>
- <defs>
-  <clipPath id="p7c0210e201">
-   <rect x="81.559375" y="24.7" width="571.181102" height="194.04"/>
-  </clipPath>
- </defs>
-</svg>
-<!-- /FIG:result --></div>
-        <p class="cap">로지스틱 회귀(가중치 켬)의 혼동행렬 · 불량 21장 중 17장을 양품으로 판정</p>
+        <p class="figcap"><span class="no">그림 3.</span>모델별 정확도·재현율·F1. 정확도 0.93대인 세 모델은 불량을 0~1장만 잡음</p>
         <div class="nums">
-          <div><span class="v">0.190</span><span class="k">재현율(불량 21장 중 4장)</span></div>
-          <div><span class="v">0.838</span><span class="k">정확도(기준선은 0.933)</span></div>
-          <div><span class="v">0개</span><span class="k">정확도로 기준선을 넘은 후보 모델</span></div>
+          <div><span class="v">4/21</span><span class="k">잡은 불량(재현율 0.190)</span></div>
+          <div><span class="v">0.838<small> 대 0.933</small></span><span class="k">정확도: 선택 모델 대 기준선</span></div>
+          <div><span class="v">0개</span><span class="k">정확도로 기준선을 넘은 후보</span></div>
         </div>
-        <!-- 내용 끝 -->
       </section>
 
       <section class="sec">
-        <h2>5. 해석과 결론</h2>
-        <!-- 내용 시작: 결과 해석 1줄 · 우리 팀이 찾아낸 것 3줄 · 다시 확인 1줄 · 결론 한 문장 -->
-        <p>정확도 0.838은 기준선(0.933)보다 <b>0.096</b> 낮고, 불량 21장 중 <b>4장</b>만 잡음. 랜덤 포레스트의 정확도 0.933은 314장 모두를 양품이라고 답한 결과.</p>
-        <p><span class="lb">우리 팀이 찾아낸 것</span></p>
-        <ul>
-          <li><b>불량과 함께 움직이는 센서 없음:</b> 센서 446개 중 최대 상관 0.156, 0.2를 넘는 센서 0개</li>
-          <li><b>불량은 시기에 몰림:</b> 7~8월 10.5%, 9~10월 4.1% · 8월 10일은 하루 12장 중 5장</li>
-          <li><b>많이 잡은 모델이 양품도 많이 버림:</b> 불량 1장당 양품 결정 트리 11.9장, 로지스틱 8.5장</li>
-          <li><b>시간 순 분할로 다시 확인:</b> 불량 17장 중 3장, 결론은 같음</li>
+        <h2>5. 논의</h2>
+        <ul class="finds">
+          <li><span class="hl">불량과 뚜렷하게 함께 움직이는 센서 없음</span>센서 446개 중 최대 상관계수 <b>0.156</b>, 0.2를 넘는 센서 <b>0개</b></li>
+          <li><span class="hl">불량은 특정 시기에 몰림</span>불량률 7~8월 <b>10.5%</b>, 9~10월 <b>4.1%</b> · 8월 10일 하루 12장 중 5장</li>
+          <li><span class="hl">불량을 많이 잡은 모델이 양품도 많이 버림</span>불량 1장당 버린 양품: 결정 트리 <b>11.9장</b>, 로지스틱 <b>8.5장</b></li>
         </ul>
-        <p class="final">이 데이터에서는 센서 값으로 불량을 미리 가려내기 어렵고, 불량률은 시기에 따라 크게 달라짐.</p>
-        <!-- 내용 끝 -->
       </section>
 
       <section class="sec">
-        <h2>6. 한계와 향후 연구</h2>
-        <!-- 내용 시작: 한계 3줄(수치) · 오용 주의 1줄 · 더 해 보고 싶은 것 2줄 · 배운 점 1줄 -->
+        <h2>6. 결론과 한계</h2>
+        <p class="final">정확도 93%는 아무것도 하지 않은 것과 같고, 이 데이터로는 불량을 미리 가려내기 어려움</p>
         <ul>
-          <li>센서 590개의 이름과 단위가 비공개: 어느 공정이 원인인지 말할 수 없음</li>
-          <li>불량 104장(학습 83장)뿐이라 불량 한 장마다 재현율이 <b>0.048</b>씩 바뀜</li>
+          <li>센서 이름·단위 비공개: 어느 공정이 원인인지 말할 수 없음</li>
+          <li>시험 불량 21장뿐: 한 장마다 재현율 <b>0.048</b>씩 바뀜 · 교차검증 미실시</li>
           <li>2008년 한 공장의 약 석 달치: 다른 공장·지금의 공정에 적용 불가</li>
-          <li><span class="lb">오용 주의:</span>실제 라인에 사용하면 양품 34장을 버리고 불량 17장을 내보냄</li>
-          <li><span class="lb">더 해 볼 것:</span>불량 데이터 추가 수집, 불량이 몰린 7월 말~8월의 공정 기록 확인</li>
-          <li><span class="lb">교과·진로:</span>화학·물리학·수학(조건부 확률) · 반도체 공정·품질 관리 엔지니어</li>
-          <li><span class="lb">배운 점:</span>정확도가 가장 높은 모델도 혼동행렬을 직접 확인해야 함</li>
+          <li><span class="lb">향후 연구:</span>불량이 몰린 7월 말~8월의 공정 기록과 함께 분석</li>
         </ul>
-        <!-- 내용 끝 -->
       </section>
     </div>
   </div>
@@ -1046,11 +1065,10 @@ L 652.740477 121.72
   <!-- ════════ 발치 ════════ -->
   <footer class="foot">
     <div>
-      <!-- 내용 시작: 데이터 출처 · 재계산 안내 · 저장소·앱 주소 -->
-      데이터: McCann, M. &amp; Johnston, A. (2008). SECOM [Dataset]. UCI Machine Learning Repository. doi.org/10.24432/C54305 (CC BY 4.0), 2026-10-15 접근<br>
-      모든 수치는 code/check.py로 다시 계산 가능 · 데이터 출처·소프트웨어는 저장소 README 참고문헌 참고<br>
-      저장소 github.com/greatsong/ds-sample-4-semiconductor · 앱 greatsong.github.io/ds-sample-4-semiconductor
-      <!-- 내용 끝 -->
+      <span class="ref-lab">참고문헌</span>[1] McCann, M. &amp; Johnston, A. (2008). SECOM [Dataset]. UCI Machine Learning Repository. DOI 10.24432/C54305 (CC BY 4.0), 2026-10-15 접근<br>
+      [2] 소프트웨어: Python 3.11, pandas 2.3.3, scikit-learn 1.8.0, xgboost 3.2.0, plotly 6.6.0, Streamlit 1.53.1, stlite 1.4.0, matplotlib 3.10.8 · Claude Fable 5.1(Anthropic)<br>
+      <span class="ref-lab">생성형 AI 활용:</span>Claude Fable 5.1(Anthropic)로 분석 코드 작성·반론 요청·발표 문구 다듬기, 주제 선정·해석·결론은 팀이 작성<br>
+      모든 수치는 code/check.py로 다시 계산할 수 있음 · 저장소 github.com/greatsong/ds-sample-4-semiconductor · 앱 greatsong.github.io/ds-sample-4-semiconductor
     </div>
     <div class="qr"><!-- FIG:qr_app --><svg role="img" aria-label="https://greatsong.github.io/ds-sample-4-semiconductor/" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 37 37" shape-rendering="crispEdges" class="segno"><path class="qrline" stroke="#000" d="M2 2.5h7m2 0h1m1 0h2m1 0h1m1 0h1m1 0h6m2 0h7m-33 1h1m5 0h1m4 0h1m3 0h1m1 0h2m5 0h1m1 0h1m5 0h1m-33 1h1m1 0h3m1 0h1m1 0h1m1 0h3m1 0h3m1 0h1m1 0h3m3 0h1m1 0h3m1 0h1m-33 1h1m1 0h3m1 0h1m1 0h3m1 0h1m2 0h1m1 0h2m1 0h1m1 0h1m1 0h1m1 0h1m1 0h3m1 0h1m-33 1h1m1 0h3m1 0h1m1 0h1m1 0h2m2 0h8m1 0h1m2 0h1m1 0h3m1 0h1m-33 1h1m5 0h1m1 0h1m3 0h2m4 0h1m1 0h1m5 0h1m5 0h1m-33 1h7m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h1m1 0h7m-25 1h5m1 0h1m1 0h1m1 0h5m1 0h1m-25 1h1m1 0h5m2 0h1m1 0h1m1 0h1m3 0h1m1 0h2m1 0h2m2 0h5m-30 1h1m3 0h1m1 0h2m2 0h1m1 0h1m2 0h2m1 0h2m2 0h1m2 0h2m1 0h2m1 0h1m-33 1h5m1 0h2m3 0h7m2 0h1m1 0h1m2 0h1m2 0h1m1 0h2m-32 1h1m1 0h1m2 0h1m1 0h2m2 0h3m2 0h1m4 0h2m1 0h1m3 0h4m-32 1h2m1 0h2m1 0h1m3 0h1m1 0h1m1 0h1m1 0h1m1 0h2m2 0h1m1 0h1m3 0h2m-30 1h4m3 0h2m1 0h1m1 0h2m1 0h1m2 0h3m2 0h1m2 0h2m1 0h1m1 0h2m-33 1h2m1 0h1m1 0h5m1 0h2m2 0h2m5 0h1m2 0h2m2 0h3m-32 1h1m3 0h1m2 0h1m7 0h1m4 0h3m2 0h2m1 0h3m-29 1h1m1 0h1m1 0h2m3 0h2m1 0h2m1 0h1m4 0h4m1 0h3m2 0h1m-31 1h1m4 0h2m2 0h1m6 0h3m2 0h1m2 0h2m1 0h2m1 0h1m-33 1h2m3 0h2m3 0h1m3 0h3m1 0h1m1 0h1m1 0h1m2 0h4m1 0h2m-32 1h4m6 0h1m5 0h1m1 0h4m3 0h1m1 0h6m-31 1h1m3 0h2m2 0h1m1 0h1m5 0h1m1 0h1m1 0h1m1 0h2m1 0h3m-30 1h3m4 0h1m1 0h1m4 0h3m1 0h3m2 0h1m1 0h3m2 0h1m1 0h1m-33 1h1m3 0h4m2 0h2m2 0h1m2 0h2m1 0h1m1 0h1m2 0h1m4 0h2m-32 1h1m2 0h3m1 0h1m2 0h1m1 0h2m2 0h1m1 0h2m1 0h1m3 0h2m2 0h2m1 0h1m-33 1h1m1 0h1m3 0h3m3 0h1m1 0h1m2 0h2m3 0h1m1 0h5m2 0h1m-24 1h1m1 0h3m3 0h6m2 0h1m3 0h1m1 0h3m-33 1h7m3 0h3m2 0h3m3 0h4m1 0h1m1 0h1m1 0h2m-32 1h1m5 0h1m1 0h2m2 0h1m1 0h2m1 0h5m1 0h2m3 0h4m-32 1h1m1 0h3m1 0h1m1 0h1m2 0h4m1 0h1m2 0h1m2 0h1m1 0h6m1 0h2m-33 1h1m1 0h3m1 0h1m1 0h1m3 0h1m2 0h1m1 0h6m2 0h1m2 0h2m1 0h2m-33 1h1m1 0h3m1 0h1m1 0h1m2 0h3m1 0h3m2 0h1m1 0h1m1 0h4m2 0h1m-31 1h1m5 0h1m4 0h3m1 0h1m2 0h1m1 0h3m5 0h3m-31 1h7m1 0h2m3 0h1m1 0h1m1 0h1m5 0h5m3 0h1"/></svg>
 <!-- /FIG:qr_app --><div>앱</div></div>

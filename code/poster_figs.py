@@ -8,7 +8,7 @@ check.py와 같은 전처리·분할·모델을 사용하므로 그래프의 값
 poster.html의 <!-- FIG:이름 --> 과 <!-- /FIG:이름 --> 사이를 새 SVG로 바꾼다.
   FIG:hist     2. 데이터  분포 그래프
   FIG:bars     4. 결과    평가지표 비교 막대 그래프(기준선 + 후보 모델 전부, 선택 모델만 강조 색)
-  FIG:result   4. 결과    결과 그래프(분류: 혼동행렬 히트맵)
+  FIG:result   4. 결과    결과 그래프(분류: 혼동행렬 히트맵, v4에서는 결과 구역 맨 위에 크게)
   FIG:qr_repo  제목띠     저장소 QR
   FIG:qr_app   발치       앱 QR
 
@@ -39,6 +39,8 @@ GRAY = "#9aa0aa"        # 선택하지 않은 모델·나머지 점
 DARK = "#4a4f57"        # 기준선
 # 단 폭(인치) = (594mm - 좌우 여백 2×26mm - 단 사이 22mm) / 2 = 260mm. poster.html의 --pad-x·--gap을 바꾸면 다시 계산한다
 COL_W = 260 / 25.4
+# 그래프 높이(인치): v4 포스터(요약 상자 + 결과 구역에 그림 2개)에 맞춘 값
+HIST_H, BARS_H, RESULT_H = 2.1, 3.8, 4.2
 
 plt.rcParams.update({
     "svg.fonttype": "none",          # 글자를 글자로 남겨 브라우저 글꼴로 그린다
@@ -140,7 +142,7 @@ counts = y.value_counts()
 ratio = df[sensors].isna().mean()
 cats = ["0%", "0~5%", "5~50%", "50% 초과"]
 ncol = pd.cut(ratio, [-0.001, 0, 0.05, 0.5, 1.0], labels=cats).value_counts().reindex(cats)
-fig, (a1, a2) = plt.subplots(1, 2, figsize=(COL_W, 2.1), gridspec_kw={"width_ratios": [1, 1.7], "wspace": 0.35})
+fig, (a1, a2) = plt.subplots(1, 2, figsize=(COL_W, HIST_H), gridspec_kw={"width_ratios": [1, 1.7], "wspace": 0.35})
 a1.bar(["양품", "불량"], [counts[0], counts[1]], color=[GRAY, ACCENT], width=0.6)
 for i, v in enumerate([counts[0], counts[1]]):
     a1.text(i, v + 25, f"{v:,}", ha="center", va="bottom", fontsize=20,
@@ -183,7 +185,7 @@ metrics = [("정확도", accuracy_score), ("재현율", lambda a, b: recall_scor
 table = {m: [f(y_te, p) for _, p in rows] for m, f in metrics}
 
 # 지표별로 묶은 가로 막대 세 묶음(모델 이름은 왼쪽 묶음에만)
-fig, axes = plt.subplots(1, 3, figsize=(COL_W, 4.2), sharey=True, gridspec_kw={"wspace": 0.12})
+fig, axes = plt.subplots(1, 3, figsize=(COL_W, BARS_H), sharey=True, gridspec_kw={"wspace": 0.12})
 yy = np.arange(len(names))[::-1]
 colors = [ACCENT if n == PICK else DARK if n == BASE else GRAY for n in names]
 for ax, (m, _) in zip(axes, metrics):
@@ -209,14 +211,14 @@ svg_bars = svg_of(fig)
 # 그래프 3(FIG:result): 로지스틱 회귀(가중치 켬)의 혼동행렬
 cm = confusion_matrix(y_te, pick_pred, labels=[0, 1])
 cmap = LinearSegmentedColormap.from_list("accent", ["#ffffff", ACCENT])
-fig, ax = plt.subplots(figsize=(COL_W, 3.5))
+fig, ax = plt.subplots(figsize=(COL_W, RESULT_H))
 ax.imshow(np.log1p(cm), cmap=cmap, vmin=0, vmax=np.log1p(cm.max()), aspect="auto")
 labels = [["양품을 양품으로", "양품을 불량으로"], ["불량을 양품으로(놓침)", "불량을 불량으로(잡음)"]]
 for i in range(2):
     for j in range(2):
         dark = np.log1p(cm[i, j]) > np.log1p(cm.max()) * 0.6
         c = "#fff" if dark else "#000"
-        ax.text(j, i - 0.1, f"{cm[i, j]}장", ha="center", va="center", fontsize=40, fontweight="bold", color=c)
+        ax.text(j, i - 0.1, f"{cm[i, j]}장", ha="center", va="center", fontsize=48, fontweight="bold", color=c)
         ax.text(j, i + 0.25, labels[i][j], ha="center", va="center", fontsize=20, color=c)
 ax.set_xticks([0, 1])
 ax.set_xticklabels(["예측 양품", "예측 불량"])
