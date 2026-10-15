@@ -1,15 +1,19 @@
 # 검증 스크립트: main.py와 같은 계산을 터미널에서 돌려 README·log·slides에 적은 모든 수치를 출력한다.
 # 실행: 저장소 맨 위 폴더에서  python3 code/check.py
+# 후보 모델 비교에 XGBoost가 들어가므로 이 파일은 xgboost가 설치된 컴퓨터에서 돌린다(앱에는 넣을 수 없음).
 from pathlib import Path
 
 import pandas as pd
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.impute import SimpleImputer
 from sklearn.linear_model import LogisticRegression
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.tree import DecisionTreeClassifier
 from sklearn.metrics import accuracy_score, confusion_matrix, f1_score, precision_score, recall_score
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import StandardScaler
+from xgboost import XGBClassifier
 
 DATA = Path(__file__).resolve().parent.parent / "data" / "secom.csv"
 
@@ -54,7 +58,7 @@ def show(name, s):
     print(f"    혼동행렬 [[양품→양품 {tn}, 양품→불량 {fp}], [불량→양품 {fn}, 불량→불량 {tp}]]")
 
 
-def experiment(title, X_tr, X_te, y_tr, y_te, with_forest=False):
+def experiment(title, X_tr, X_te, y_tr, y_te):
     print(f"\n### {title}")
     print(f"학습 {len(y_tr)}장(불량 {int(y_tr.sum())}, {y_tr.mean():.1%}) · 시험 {len(y_te)}장(불량 {int(y_te.sum())}, {y_te.mean():.1%})")
     base = pd.Series(0, index=y_te.index)
@@ -67,12 +71,6 @@ def experiment(title, X_tr, X_te, y_tr, y_te, with_forest=False):
         show(f"로지스틱 회귀 · 가중치 {'켬' if weight else '끔'}", results[weight])
     print(f"불량 한 장 차이로 바뀌는 재현율: {1 / y_te.sum():.3f}")
     print(f"기준선과 가중치 켬 모델의 정확도 차이: {results[True]['acc'] - base_s['acc']:.3f}")
-    if with_forest:
-        forest = make_pipeline(
-            SimpleImputer(strategy="median"),
-            RandomForestClassifier(n_estimators=300, class_weight="balanced", random_state=0),
-        ).fit(X_tr, y_tr)
-        show("확인용 랜덤 포레스트(가중치 켬, 300그루)", scores(y_te, forest.predict(X_te)))
 
 
 df = pd.read_csv(DATA)
@@ -105,7 +103,23 @@ X = df[keep]
 y = df["fail"]
 
 X_tr, X_te, y_tr, y_te = train_test_split(X, y, test_size=0.2, random_state=42, stratify=y)
-experiment("본 분석: 무작위 분할(시험 20%, 불량 비율 유지, 분할 난수 42)", X_tr, X_te, y_tr, y_te, with_forest=True)
+experiment("본 분석: 무작위 분할(시험 20%, 불량 비율 유지, 분할 난수 42)", X_tr, X_te, y_tr, y_te)
+
+print("\n## 후보 모델 비교(같은 전처리: 중앙값 채우기 → 표준화 · 같은 무작위 분할 · 시험 314장)")
+spw = (y_tr == 0).sum() / (y_tr == 1).sum()
+print(f"XGBoost 가중치(학습 데이터의 양품 수 / 불량 수): {(y_tr == 0).sum()} / {(y_tr == 1).sum()} = {spw:.2f}")
+candidates = [
+    ("로지스틱 회귀(가중치 켬)", LogisticRegression(max_iter=3000, class_weight="balanced")),
+    ("k-NN(k=5, 가중치 없음)", KNeighborsClassifier(n_neighbors=5)),
+    ("결정 트리(깊이 4, 가중치 켬)", DecisionTreeClassifier(max_depth=4, class_weight="balanced", random_state=0)),
+    ("랜덤 포레스트(300그루, 가중치 켬)", RandomForestClassifier(n_estimators=300, class_weight="balanced", random_state=0)),
+    ("XGBoost(기본값, 가중치 켬)", XGBClassifier(scale_pos_weight=spw, random_state=0)),
+]
+for name, clf in candidates:
+    model = make_pipeline(SimpleImputer(strategy="median"), StandardScaler(), clf).fit(X_tr, y_tr)
+    s = scores(y_te, model.predict(X_te))
+    show(name, s)
+    print(f"    기준선 정확도와의 차이: {s['acc'] - (y_te == 0).mean():.3f}")
 
 cut = int(len(df) * 0.8)
 print(f"\n시간 순 분할 경계: 학습 마지막 {df['timestamp'].iloc[cut - 1]} · 시험 처음 {df['timestamp'].iloc[cut]}")

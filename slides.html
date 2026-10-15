@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>팀 수율 발표 · 센서로 불량 웨이퍼 가려내기</title>
+<title>팀 수율 발표 · 불량 웨이퍼 가려내기</title>
+<script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   :root {
@@ -56,7 +57,7 @@
   .src { margin-top: 1.4vh; font-size: clamp(12px, 1.2vw, 16px); color: var(--ink-dim); }
   .diagram { margin-top: 3vh; background: #f7f3e8; border-radius: 16px; padding: 2vh 1.4vw; overflow-x: auto; }
   .diagram.short svg { max-height: var(--dh, 40vh); }
-  /* 인터랙티브 위젯 — 밝은 상자 안 */
+  /* 인터랙티브 위젯, 밝은 상자 안 */
   .widget { color: #1c2230; }
   .diagram .widget svg { width: auto; max-width: 100%; max-height: var(--wh, 44vh); height: auto; display: block; margin: 0 auto; }
   .wctl { display: flex; flex-wrap: wrap; align-items: center; gap: .8vh 1.4vw; margin-top: 1.2vh;
@@ -81,174 +82,180 @@
 @media (max-width: 760px) { .dots { display: none; } }
 </style>
 <style>
-  .kicker { letter-spacing: .06em; }
-  .bars { margin-top: 3vh; display: flex; flex-direction: column; gap: 2vh; max-width: 46em; }
-  .bar { display: grid; grid-template-columns: 12em 1fr 4em; align-items: center; gap: 1.2vw;
-         font-size: clamp(15px, 1.7vw, 23px); }
-  .bar .track { background: #1c2333; border-radius: 8px; height: 4.2vh; overflow: hidden; }
-  .bar .fill { height: 100%; border-radius: 8px; background: #5b6478; }
-  .bar .fill.main { background: var(--accent2); }
-  .bar .num { font-weight: 800; text-align: right; }
-  table.cm { border-collapse: collapse; font-size: clamp(15px, 1.7vw, 23px); }
-  table.cm th, table.cm td { padding: 1vh 1.2vw; text-align: center; }
-  table.cm th { color: var(--ink-dim); font-weight: 700; }
-  table.cm td { font-weight: 800; border-radius: 6px; }
-  .cols { display: flex; gap: 3.4vw; align-items: flex-start; margin-top: 2.6vh; flex-wrap: wrap; }
-  .cols > div { flex: 1 1 0; min-width: 0; }
-  .lab { color: var(--accent); font-weight: 800; font-size: clamp(14px, 1.5vw, 20px); margin-bottom: 1.2vh; }
-  .facts.tight li { margin: 1.4vh 0; font-size: clamp(16px, 1.8vw, 25px); }
-  table.mini.sm { font-size: clamp(14px, 1.55vw, 21px); margin-top: 1vh; }
-  table.mini.sm th, table.mini.sm td { padding: .9vh 1.1vw; }
-  .qbank { margin-top: 3.4vh; color: var(--ink-dim); font-size: clamp(13px, 1.3vw, 18px); line-height: 1.7; }
-  .qbank b { color: var(--ink); }
+  .bars { margin-top: 3.4vh; display: flex; flex-direction: column; gap: 2.2vh; max-width: 62em; }
+  .bar { display: grid; grid-template-columns: 15em 1fr 6em; align-items: center; gap: 1.2vw;
+    font-size: clamp(15px, 1.8vw, 25px); }
+  .bar .lab { font-weight: 700; white-space: nowrap; }
+  .bar .track { background: #1b2130; border-radius: 8px; height: 4.6vh; overflow: hidden; }
+  .bar .track i { display: block; height: 100%; background: var(--accent2); border-radius: 8px; }
+  .bar .track i.gray { background: #59627a; }
+  .bar .track i.hi { background: var(--accent); }
+  .bar .num { font-weight: 800; text-align: right; font-variant-numeric: tabular-nums; }
+  .qbank { margin-top: 3.4vh; padding-left: 1.4em; color: var(--ink-dim); font-size: clamp(13px, 1.35vw, 18px); line-height: 1.8; }
 </style>
 <style>
-  .cms { display: flex; gap: 2.4vw; }
-  .cms .lab { margin-bottom: .8vh; }
-  .bad { color: #ff8f6b !important; }
+  .withimg .plot { margin-top: 0; flex: 0 0 auto; padding: 1.4vh 1vw; }
+  .chart { width: 38vw; height: 46vh; }
+  .nw { white-space: nowrap; }
+  .small-facts li { font-size: clamp(17px, 2vw, 28px); }
+  table.mini.sm { font-size: clamp(14px, 1.65vw, 23px); margin-top: 2.4vh; }
+  table.mini.sm th, table.mini.sm td { padding: 1vh 1.3vw; }
+  table.mini td.hi { color: var(--accent); font-weight: 800; }
+  table.mini tr.pick td { color: var(--accent2); font-weight: 800; }
 </style>
 </head>
 <body>
 
 <!-- 1 제목 -->
-<section class="slide cover chapter">
-  <div class="kicker">1 / 9 · 제목</div>
+<section class="slide chapter">
+  <div class="kicker">1 / 12 · 제목</div>
   <h1>센서 590개의 측정값으로<br>불량 웨이퍼를 미리 가려낼 수 있는가</h1>
   <p class="sub">팀 수율 · 10101 홍길동 · 10102 김영희 · 10103 이철수</p>
-  <p class="small">SECOM 반도체 공정 데이터 1,567장 · 분류(로지스틱 회귀) · 당곡고 데이터 과학 팀 프로젝트(선생님이 만든 가상 팀의 샘플)</p>
+  <p class="small">선생님이 만든 가상 팀의 샘플 · 데이터와 수치는 실제 계산값</p>
 </section>
 
-<!-- 2 왜 -->
+<!-- 2 데이터셋 -->
 <section class="slide">
-  <div class="kicker">2 / 9 · 왜 이 주제인가</div>
-  <h2>공장 센서 숫자만으로 불량을 미리 알 수 있을까</h2>
+  <div class="kicker">2 / 12 · 우리 팀의 데이터셋</div>
+  <h2>우리 팀의 데이터셋</h2>
+  <div class="withimg">
+    <ul class="facts txt">
+      <li>UCI SECOM 공정 데이터 (2008년)</li>
+      <li>웨이퍼 <b>1,567장 · 592열</b></li>
+      <li>이름 없는 센서 <b>590개</b> · 빈칸 <b>41,951칸</b></li>
+      <li>양품 <b>1,463장</b> · 불량 <b>104장(6.6%)</b></li>
+    </ul>
+    <div class="diagram plot"><div class="chart" id="g2"></div></div>
+  </div>
+</section>
+
+<!-- 3 선택 이유 -->
+<section class="slide">
+  <div class="kicker">3 / 12 · 이 문제를 선택한 이유</div>
+  <h2>이 문제를 선택한 이유</h2>
   <ul class="facts">
     <li>뉴스에 자주 나오는 반도체 <b>수율</b>(양품의 비율)</li>
-    <li>공장에는 센서가 수백 개, 그 숫자로 불량을 예측할 수 있는지 궁금했습니다</li>
-    <li>11·12차시 뇌졸중 실습: <b>정확도만 보면 놓치는 것</b></li>
-  </ul>
-  <p class="point">확인할 것: 불량이 드문 <b>공장 데이터</b>에서도 같은 일이 생기는가</p>
-</section>
-
-<!-- 3 데이터 -->
-<section class="slide">
-  <div class="kicker">3 / 9 · 데이터</div>
-  <h2>SECOM 웨이퍼 1,567장 · 592열</h2>
-  <ul class="facts tight">
-    <li>출처: UCI Machine Learning Repository, SECOM <span style="color:var(--ink-dim)">(McCann &amp; Johnston, 2008 · CC BY 4.0)</span></li>
-    <li>측정 기간: 2008년 7월 19일 ~ 10월 17일 · 2026-10-15에 받음</li>
-    <li>열: 측정 시각 1 · 판정(fail) 1 · <b>센서 590</b> (이름과 단위가 공개되지 않은 익명 센서)</li>
-    <li>원본은 두 파일, 열 이름 없음 → 선생님이 열 이름을 붙여 한 파일로 합침</li>
-    <li>공장 설비의 측정값 · 사람에 대한 정보 없음</li>
+    <li>공장 센서 수백 개, 그 숫자만으로 불량 예측 가능 여부</li>
+    <li>12차시 뇌졸중 실습: <b>정확도만 보면 놓치는 것</b></li>
+    <li>불량이 드문 공장 데이터에서도 같은 일이 생기는지 확인</li>
   </ul>
 </section>
 
-<!-- 4 구멍과 전처리 -->
+<!-- 4 과정 -->
 <section class="slide">
-  <div class="kicker">4 / 9 · 데이터에서 찾은 구멍과 전처리 판단</div>
-  <h2>빈칸 41,951칸 · 불량은 104장(6.6%)뿐</h2>
-  <div class="cols">
-    <div>
-      <div class="lab">우리의 판단</div>
-      <table class="mini sm">
-        <tr><th>판단</th><th>열 수</th><th>이유</th></tr>
-        <tr><td>상수 열 제거</td><td><em>116</em></td><td>값이 바뀌지 않아 정보 없음</td></tr>
-        <tr><td>빈칸 절반 초과 열 제거</td><td><em>28</em></td><td>채우면 만든 값이 됨</td></tr>
-        <tr><td>남긴 센서 열</td><td><em>446</em></td><td>빈칸은 학습 데이터 중앙값으로</td></tr>
-      </table>
-    </div>
-    <div style="flex:0 0 auto">
-      <div class="lab">거절한 AI 제안</div>
-      <ul class="facts tight">
-        <li>빈칸을 <b>0</b>으로 채우기</li>
-        <li>불량을 복사해 개수 맞추기</li>
-        <li>전체 데이터의 중앙값 사용</li>
-      </ul>
-    </div>
-  </div>
-  <p class="small">양품 1,463장 · 불량 104장 → 정확도만으로는 판단할 수 없는 데이터</p>
-</section>
-
-<!-- 5 방법과 기준선 -->
-<section class="slide">
-  <div class="kicker">5 / 9 · 방법과 기준선</div>
-  <h2>로지스틱 회귀 하나 · 기준선은 전부 양품 찍기</h2>
+  <div class="kicker">4 / 12 · 어떤 과정으로 분석했는지</div>
+  <h2>어떤 과정으로 분석했는지</h2>
   <ul class="facts">
-    <li>학습 <b>1,253장</b> · 시험 <b>314장</b>(불량 21장, 불량 비율 유지, 분할 난수 42)</li>
-    <li>표준화 후 학습 · 12차시의 <b>가중치</b>를 끈 모델과 켠 모델 비교</li>
-    <li>기준선 정확도 <b>0.933</b>(314장 중 293장) · 재현율 <b>0</b>(불량 21장 중 0장)</li>
-    <li>랜덤 포레스트(가중치 켬, 300그루)는 확인용으로만 사용</li>
+    <li>데이터 승인, 양품·불량 표기 방향 확인 (2~3차시)</li>
+    <li>빈칸과 불량 개수 확인, 열 <b>144개</b> 제거 (4~6차시)</li>
+    <li>분할·기준선, 표준화 후 로지스틱 회귀 (7~9차시)</li>
+    <li>가중치 끔·켬 비교, 후보 모델 <b>5개</b> 비교 (10차시)</li>
+    <li>AI 반론, 시간 순 분할로 재확인 (11~12차시)</li>
   </ul>
 </section>
 
-<!-- 6 결과 -->
+<!-- 5 고려한 모델 -->
 <section class="slide">
-  <div class="kicker">6 / 9 · 결과</div>
-  <h2>정확도는 기준선보다 낮고, 불량은 21장 중 4장</h2>
-  <div class="cols">
-    <div>
-      <div class="lab">정확도</div>
-      <div class="bars" style="margin-top:0">
-        <div class="bar"><span>기준선(전부 양품)</span><div class="track"><div class="fill" style="width:93.3%"></div></div><span class="num">0.933</span></div>
-        <div class="bar"><span>가중치 끔</span><div class="track"><div class="fill" style="width:87.3%"></div></div><span class="num">0.873</span></div>
-        <div class="bar"><span>가중치 켬(최종)</span><div class="track"><div class="fill main" style="width:83.8%"></div></div><span class="num">0.838</span></div>
-        <div class="bar"><span>랜덤 포레스트(확인)</span><div class="track"><div class="fill" style="width:93.3%"></div></div><span class="num">0.933</span></div>
-      </div>
-      <table class="mini sm" style="margin-top:2.6vh">
-        <tr><th>모델</th><th>재현율</th><th>정밀도</th><th>F1</th></tr>
-        <tr><td>가중치 끔</td><td>0.143</td><td>0.120</td><td>0.130</td></tr>
-        <tr><td>가중치 켬</td><td>0.190</td><td>0.105</td><td>0.136</td></tr>
-        <tr><td>랜덤 포레스트</td><td class="bad">0.000</td><td>0.000</td><td>0.000</td></tr>
-      </table>
-    </div>
-    <div style="flex:0 0 auto">
-      <div class="cms">
-        <div><div class="lab">가중치 끔</div><table class="cm"><tr><th></th><th>예측 양품</th><th>예측 불량</th></tr><tr><th>실제 양품</th><td style="background:rgba(124,199,255,0.87);color:#0f1219">271</td><td style="background:rgba(124,199,255,0.33);color:#f2f4f8">22</td></tr><tr><th>실제 불량</th><td style="background:rgba(124,199,255,0.31);color:#f2f4f8">18</td><td style="background:rgba(124,199,255,0.20);color:#f2f4f8">3</td></tr></table></div>
-        <div><div class="lab">가중치 켬</div><table class="cm"><tr><th></th><th>예측 양품</th><th>예측 불량</th></tr><tr><th>실제 양품</th><td style="background:rgba(124,199,255,0.87);color:#0f1219">259</td><td style="background:rgba(124,199,255,0.39);color:#f2f4f8">34</td></tr><tr><th>실제 불량</th><td style="background:rgba(124,199,255,0.31);color:#f2f4f8">17</td><td style="background:rgba(124,199,255,0.21);color:#f2f4f8">4</td></tr></table></div>
-      </div>
-      <p class="small" style="margin-top:1.6vh">시험 314장 · 행 = 실제, 열 = 예측</p>
-    </div>
+  <div class="kicker">5 / 12 · 어떤 모델을 고려했는지</div>
+  <h2>어떤 모델을 고려했는지</h2>
+  <table class="mini sm">
+    <tr><th>후보 모델</th><th>정확도</th><th>재현율</th><th>정밀도</th><th>F1</th><th>잡은 불량</th></tr>
+    <tr><td>기준선(전부 양품)</td><td>0.933</td><td>0.000</td><td>0.000</td><td>0.000</td><td>0 / 21</td></tr>
+    <tr class="pick"><td>로지스틱 회귀</td><td>0.838</td><td>0.190</td><td>0.105</td><td>0.136</td><td>4 / 21</td></tr>
+    <tr><td>k-NN(k=5)</td><td>0.933</td><td>0.048</td><td>0.500</td><td>0.087</td><td>1 / 21</td></tr>
+    <tr><td>결정 트리(깊이 4)</td><td>0.656</td><td class="hi">0.381</td><td>0.078</td><td>0.129</td><td>8 / 21</td></tr>
+    <tr><td>랜덤 포레스트(300그루)</td><td>0.933</td><td>0.000</td><td>0.000</td><td>0.000</td><td>0 / 21</td></tr>
+    <tr><td>XGBoost(기본값)</td><td>0.930</td><td>0.000</td><td>0.000</td><td>0.000</td><td>0 / 21</td></tr>
+  </table>
+  <p class="small">같은 전처리 · 같은 분할(시험 314장) · 가중치 켬(k-NN은 기능 없음) · XGBoost는 로컬 계산</p>
+</section>
+
+<!-- 6 선택 이유 -->
+<section class="slide">
+  <div class="kicker">6 / 12 · 왜 이 모델을 선택했는지</div>
+  <h2>왜 이 모델을 선택했는지</h2>
+  <ul class="facts">
+    <li>최종: <b>로지스틱 회귀(가중치 켬)</b></li>
+    <li>기준선 정확도 <b>0.933</b>을 넘은 모델 없음 → 단순한 모델</li>
+    <li>수업에서 배운 모델 · 센서별 계수 확인 가능</li>
+    <li>결정 트리: 불량 <b>8장</b> 잡음, 대신 양품 <b>95장</b> 불량 판정</li>
+    <li>F1: 로지스틱 <b>0.136</b> · 결정 트리 <b>0.129</b></li>
+  </ul>
+</section>
+
+<!-- 7 평가지표 -->
+<section class="slide">
+  <div class="kicker">7 / 12 · 우리가 사용한 평가지표</div>
+  <h2>우리가 사용한 평가지표</h2>
+  <ul class="facts">
+    <li>정확도: 웨이퍼 전체 가운데 판정이 맞은 비율</li>
+    <li>재현율: 실제 불량 가운데 잡아낸 비율</li>
+    <li>우리 모델: 정확도 <b>0.838</b> · 재현율 <b>0.190</b>(21장 중 4장)</li>
+    <li>기준선: 정확도 <b>0.933</b> · 재현율 <b>0.000</b></li>
+    <li>재현율 중심: 불량 6.6%, 놓친 불량은 그대로 출하</li>
+  </ul>
+  <p class="small">함께 본 지표: 정밀도 0.105(불량 판정 38장 중 4장) · F1 0.136</p>
+</section>
+
+<!-- 8 결정 -->
+<section class="slide">
+  <div class="kicker">8 / 12 · 모델링 과정에서 우리 팀이 결정한 것</div>
+  <h2>모델링 과정에서 우리 팀이 결정한 것</h2>
+  <ul class="facts">
+    <li>상수 열 <b>116개</b> · 빈칸 절반 초과 열 <b>28개</b> 제거</li>
+    <li>빈칸은 중앙값, 표준화 기준도 학습 데이터에서만</li>
+    <li>가중치 켬: 불량 <b>1장</b> 더, 양품 <b>12장</b> 더 버림</li>
+    <li>문턱값 조정 거절: 수업 범위 밖, 설명 불가</li>
+    <li>시간 순 분할 재확인: 불량 17장 중 <b>3장</b>, 결론 같음</li>
+  </ul>
+</section>
+
+<!-- 9 해석 -->
+<section class="slide">
+  <div class="kicker">9 / 12 · 최종 분석 결과에 대한 우리 팀의 해석</div>
+  <h2>최종 분석 결과에 대한 우리 팀의 해석</h2>
+  <div class="withimg">
+    <div class="diagram plot"><div class="chart" id="g9"></div></div>
+    <ul class="facts txt">
+      <li><b>정확도 93%</b> = 아무것도 안 한 것과 같음</li>
+      <li>최종 모델: 불량 <b>21장 중 4장</b></li>
+      <li>기준선을 넘은 후보 없음</li>
+      <li>결론: 이 조건에서는 가려내기 어려움</li>
+    </ul>
   </div>
+  <p class="small">오용 주의: 실제 라인에 쓰면 양품 34장 폐기 · 불량 17장 통과</p>
 </section>
 
-<!-- 7 해석 -->
+<!-- 10 추가 연구 -->
 <section class="slide">
-  <div class="kicker">7 / 9 · 해석</div>
-  <h2>이 데이터로는 이 방법으로 불량을 미리 가려내기 어렵다</h2>
-  <ul class="facts tight">
-    <li>재현율 0.190: 실제 불량 21장 중 <b>4장</b>만 잡음 · 정밀도 0.105: 불량 판정 38장 중 4장만 실제 불량</li>
-    <li>랜덤 포레스트 정확도 0.933 = 기준선: 전부 양품이라고 답한 모델 → <b>정확도 93%는 아무것도 안 한 것과 같음</b></li>
-    <li>AI 평가 거절: "정확도 87%면 괜찮다" → 기준선 0.933보다 낮음</li>
-    <li>AI 예상 확인: 가중치를 켜면 불량 <b>1장</b> 더 잡는 대신 양품 <b>12장</b>을 더 버림</li>
-    <li>AI 제안 거절: 문턱값 낮추기 (수업 범위 밖, 설명할 수 없는 조정)</li>
-    <li>반론 수용: 시간 순 분할(뒤 20% 시험, 불량 17장) → 기준선 0.946 · 끔 0.933 · 켬 0.911, 결론 같음</li>
-  </ul>
+  <div class="kicker">10 / 12 · 이후 추가로 연구한다면</div>
+  <h2>이후 추가로 연구한다면 더 해 보고 싶은 것</h2>
+  <table class="mini">
+    <tr><th>구분</th><th>키워드</th></tr>
+    <tr><td>더 해 볼 분석</td><td>불량 데이터 추가 수집 · 센서 이름이 공개된 공정 데이터 · 시간에 따른 불량 비율</td></tr>
+    <tr><td>교과 연계</td><td>화학: 반도체 소재와 공정 · 물리학: 반도체의 원리 · 수학: 조건부 확률 · 통합사회: 산업 구조</td></tr>
+    <tr><td>진로 분야</td><td>반도체 공정 엔지니어 · 품질 관리 엔지니어 · 제조 데이터 분석가</td></tr>
+  </table>
 </section>
 
-<!-- 8 한계 -->
+<!-- 11 느낀 점 -->
 <section class="slide">
-  <div class="kicker">8 / 9 · 한계</div>
-  <h2>이 결과를 그대로 믿기 어려운 이유</h2>
-  <ul class="facts tight">
-    <li>센서 590개가 익명이라 "어느 공정 때문"이라고 말할 수 없음</li>
-    <li>불량 104장(학습 83장)으로 센서 446개의 패턴을 배우기에는 부족</li>
-    <li>시험 불량 21장: 한 장 차이로 재현율 0.048 변화</li>
-    <li>2008년 한 공장의 약 석 달치 데이터</li>
-    <li>빈칸 10,868칸을 중앙값으로 채움 · 빈칸이 생긴 이유는 알 수 없음</li>
+  <div class="kicker">11 / 12 · 느끼고 배운 점</div>
+  <h2>AI를 활용하고 데이터를 분석하며 느끼고 배운 점</h2>
+  <ul class="facts small-facts">
+    <li>홍길동: "정확도가 제일 높은 모델이 아무것도 안 한 모델이라는 게 이 프로젝트에서 제일 기억에 남는다."</li>
+    <li>김영희: "AI 예상과 실제 결과가 다를 수 있으니 직접 돌려 보는 게 중요하다는 걸 느꼈다."</li>
+    <li>이철수: "AI 추측대로 했으면 양품과 불량을 거꾸로 분석할 뻔했다."</li>
   </ul>
-  <p class="point">오용 주의: 이 모델로 실제 라인을 거르면 <b>양품 34장을 버리고 불량 17장을 내보냅니다</b></p>
+  <p class="point">AI 활용에서 배운 것: <b>추천 모델도 혼동행렬로 확인</b> · <b>예상은 직접 실행으로 확인</b></p>
 </section>
 
-<!-- 9 질문 -->
+<!-- 12 마무리 -->
 <section class="slide chapter">
-  <div class="kicker">9 / 9 · 질문 받겠습니다</div>
-  <h1>질문 받겠습니다</h1>
-  <p class="sub">앱: index.html · 코드와 기록: 저장소 code/ · log/</p>
-  <div class="qbank">
-    <b>공개 질문 은행</b><br>
-    ① 이 그래프(또는 숫자)는 무엇을 뜻합니까 · ② 기준선보다 얼마나 나아졌습니까 · ③ 이 결과를 믿을 수 없는 이유 하나<br>
-    ④ 이 결과에서 새로 알게 된 것 · ⑤ 주제를 왜 이것으로 정했습니까
-  </div>
+  <div class="kicker">12 / 12 · 마무리</div>
+  <h1>감사합니다</h1>
+  <p class="sub">질문 받겠습니다</p>
+  <p class="small">팀 수율 · 홍길동 · 김영희 · 이철수</p>
 </section>
 
 <div class="hint">← → 이동 · Home 처음으로</div>
@@ -263,14 +270,55 @@
   const dots = document.getElementById('dots');
   slides.forEach(() => dots.appendChild(document.createElement('i')));
   let cur = 0;
+
+  // 그래프: plotly, 수치는 code/check.py 출력에서 가져온 값
+  const drawn = {};
+  const pfont = { family: '"Apple SD Gothic Neo", "Noto Sans KR", sans-serif', size: 15, color: '#1c2230' };
+  function base() {
+    return { autosize: true, margin: { l: 70, r: 20, t: 40, b: 50 }, paper_bgcolor: '#f7f3e8', plot_bgcolor: '#f7f3e8',
+      font: pfont, xaxis: { gridcolor: '#ddd6c6' }, yaxis: { gridcolor: '#ddd6c6' } };
+  }
+  function draw(id) {
+    if (drawn[id] || !window.Plotly) return;
+    drawn[id] = true;
+    if (id === 'g2') {
+      const lay = base();
+      lay.title = { text: '양품과 불량의 개수 (1,567장)', font: { size: 17 } };
+      lay.yaxis.title = { text: '웨이퍼 수(장)' };
+      lay.yaxis.range = [0, 1650];
+      const n = [1463, 104];
+      Plotly.newPlot('g2', [{ type: 'bar', x: ['양품', '불량'], y: n, text: n.map(v => v.toLocaleString() + '장'),
+        textposition: 'outside', cliponaxis: false, marker: { color: ['#9aa0ad', '#e0663a'] } }], lay,
+        { staticPlot: true, responsive: true });
+    }
+    if (id === 'g9') {
+      const lay = base();
+      lay.title = { text: '정확도와 재현율 (시험 314장)', font: { size: 17 } };
+      lay.margin.l = 110; lay.margin.r = 50;
+      lay.xaxis.range = [0, 1.12];
+      lay.yaxis = { autorange: 'reversed' };
+      lay.barmode = 'group';
+      lay.legend = { orientation: 'h', x: 0, y: -0.12 };
+      const names = ['기준선', '로지스틱', 'k-NN', '결정 트리', '랜덤 포레스트', 'XGBoost'];
+      const acc = [0.933, 0.838, 0.933, 0.656, 0.933, 0.930];
+      const rec = [0.000, 0.190, 0.048, 0.381, 0.000, 0.000];
+      Plotly.newPlot('g9', [
+        { type: 'bar', orientation: 'h', name: '정확도', y: names, x: acc, text: acc.map(v => v.toFixed(3)),
+          textposition: 'outside', cliponaxis: false, marker: { color: '#9aa0ad' } },
+        { type: 'bar', orientation: 'h', name: '재현율', y: names, x: rec, text: rec.map(v => v.toFixed(3)),
+          textposition: 'outside', cliponaxis: false, marker: { color: '#e0663a' } }
+      ], lay, { staticPlot: true, responsive: true });
+    }
+  }
   function show(i) {
     cur = Math.max(0, Math.min(slides.length - 1, i));
     slides.forEach((s, k) => s.classList.toggle('on', k === cur));
     [...dots.children].forEach((d, k) => d.classList.toggle('here', k === cur));
     document.getElementById('pageno').textContent = (cur + 1) + ' / ' + slides.length;
+    slides[cur].querySelectorAll('.chart').forEach(c => draw(c.id));
   }
   addEventListener('keydown', e => {
-    if (e.target.matches('input, select, textarea, button')) return;   // 위젯 조작 중에는 넘기지 않음
+    if (e.target.matches('input, select, textarea, button')) return;
     if (['ArrowRight', ' ', 'PageDown'].includes(e.key)) show(cur + 1);
     if (['ArrowLeft', 'PageUp'].includes(e.key)) show(cur - 1);
     if (e.key === 'Home') show(0);
