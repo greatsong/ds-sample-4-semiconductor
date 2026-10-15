@@ -107,6 +107,11 @@
   table.mini.cmp td { white-space: nowrap; }
   .ins li { font-size: clamp(16px, 1.85vw, 26px); margin: 2vh 0; }
   .ins li span { display: block; text-indent: 0; margin-top: .4vh; color: var(--ink-dim); font-size: .82em; }
+  .steps { margin-top: 2.6vh; display: grid; grid-template-columns: 1fr 1.1fr; gap: 0 2.4vw; }
+  .steps ol { list-style: none; }
+  .steps li { font-size: clamp(15px, 1.6vw, 22px); margin: 1.9vh 0; display: grid; grid-template-columns: 1.6em 5.4em 1fr; align-items: baseline; }
+  .steps li i { font-style: normal; color: var(--accent); font-weight: 800; }
+  .steps li b { color: var(--accent2); font-weight: 800; }
 </style>
 </head>
 <body>
@@ -150,13 +155,22 @@
 <section class="slide">
   <div class="kicker">4 / 17 · 어떤 과정으로 분석했는지</div>
   <h2>어떤 과정으로 분석했는지</h2>
-  <ul class="facts">
-    <li>데이터 승인, 양품·불량 표기 방향 확인 (2~3차시)</li>
-    <li>빈칸과 불량 개수 확인, 열 <b>144개</b> 제거 (4~6차시)</li>
-    <li>분할·기준선, 표준화 후 로지스틱 회귀 (7~9차시)</li>
-    <li>가중치 끔·켬 비교, 후보 모델 <b>5개</b> 비교 (10차시)</li>
-    <li>AI 반론, 시간 순 분할로 재확인 (11~12차시)</li>
-  </ul>
+  <div class="steps">
+    <ol>
+      <li><i>1</i><b>수집</b>UCI SECOM · 1,567장 × 592열</li>
+      <li><i>2</i><b>변수 선택</b>정답 fail · 입력 센서 · 시각은 분할에만</li>
+      <li><i>3</i><b>전처리</b>열 144개 제거 · 중앙값 · 표준화</li>
+      <li><i>4</i><b>분할</b>층화 80/20(난수 42) · 시간 순 80/20</li>
+      <li><i>5</i><b>기준선</b>전부 양품 · 정확도 0.933</li>
+    </ol>
+    <ol>
+      <li><i>6</i><b>후보 비교</b>모델 5개 · 같은 조건 · 가중치 켬</li>
+      <li><i>7</i><b>선택</b>기준선 넘은 모델 없음 → F1 0.136</li>
+      <li><i>8</i><b>평가</b>재현율 중심 · 정밀도 · F1 · 혼동행렬</li>
+      <li><i>9</i><b>해석</b>센서 상관 · 시기별 불량률 · 버린 양품</li>
+      <li><i>10</i><b>한계 점검</b>시간 순 분할 · 센서 590개 · 교차검증 없음</li>
+    </ol>
+  </div>
 </section>
 
 <!-- 5 고려한 모델 -->
@@ -210,7 +224,7 @@
     <li>상수 열 <b>116개</b> · 빈칸 절반 초과 열 <b>28개</b> 제거</li>
     <li>빈칸은 중앙값, 표준화 기준도 학습 데이터에서만</li>
     <li>가중치 켬: 불량 <b>1장</b> 더, 양품 <b>12장</b> 더 버림</li>
-    <li>문턱값 조정 거절: 수업 범위 밖, 설명 불가</li>
+    <li>문턱값은 기본값 그대로: 수업 범위 밖, 설명 불가</li>
     <li>시간 순 분할 재확인: 불량 17장 중 <b>3장</b>, 결론 같음</li>
   </ul>
 </section>

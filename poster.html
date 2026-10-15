@@ -77,7 +77,8 @@
   .lb { font-weight: 800; margin-right: .3em; }
   .q { font-weight: 800; }
   .flow { font-weight: 700; color: var(--accent); }
-  .flow i { font-style: normal; color: var(--ink); font-weight: 400; margin: 0 .35em; }
+  .flow small { font-size: var(--fs-small); font-weight: 400; }
+  .flow i { font-style: normal; color: var(--ink); font-weight: 400; margin: 0 .25em; }
   .cap { font-size: var(--fs-small); line-height: 1.35; }
   .fig svg { display: block; width: 100%; height: auto; }
   .final { font-weight: 800; }
@@ -396,7 +397,7 @@ L 652.740477 120.024
       <section class="sec">
         <h2>3. 방법</h2>
         <!-- 내용 시작: 분석 흐름 · 후보 모델 표 · 선택 이유 2줄 · 모델 소개 표(행 3, 열 6) · 평가지표 2줄 -->
-        <p class="flow">승인<i>→</i>전처리<i>→</i>기준선<i>→</i>후보 모델<i>→</i>선택<i>→</i>해석</p>
+        <p class="flow">수집<small>(1,567장)</small><i>→</i><wbr>변수 선택<small>(센서)</small><i>→</i><wbr>전처리<small>(446열·표준화)</small><i>→</i><wbr>분할<small>(층화·시간 순)</small><i>→</i><wbr>기준선<small>(0.933)</small><i>→</i><wbr>후보 모델 5종 비교<i>→</i><wbr>선택<small>(F1)</small><i>→</i><wbr>평가<small>(재현율)</small><i>→</i><wbr>해석<small>(상관·시기)</small></p>
         <table class="t">
           <tr><th>후보 모델(시험 314장, 불량 21장)</th><th class="r">정확도</th><th class="r">재현율</th><th class="r">F1</th><th class="r">잡은 불량</th></tr>
           <tr><td>기준선(전부 양품)</td><td class="r">0.933</td><td class="r">0.000</td><td class="r">0.000</td><td class="r">0장</td></tr>
@@ -1012,14 +1013,14 @@ L 652.740477 121.72
 
       <section class="sec">
         <h2>5. 해석과 결론</h2>
-        <!-- 내용 시작: 결과 해석 1줄 · 우리 팀이 찾아낸 것 3줄 · AI 반론 1줄 · 결론 한 문장 -->
+        <!-- 내용 시작: 결과 해석 1줄 · 우리 팀이 찾아낸 것 3줄 · 다시 확인 1줄 · 결론 한 문장 -->
         <p>정확도 0.838은 기준선(0.933)보다 <b>0.096</b> 낮고, 불량 21장 중 <b>4장</b>만 잡음. 랜덤 포레스트의 정확도 0.933은 314장 모두를 양품이라고 답한 결과.</p>
         <p><span class="lb">우리 팀이 찾아낸 것</span></p>
         <ul>
           <li><b>불량과 함께 움직이는 센서 없음:</b> 센서 446개 중 최대 상관 0.156, 0.2를 넘는 센서 0개</li>
           <li><b>불량은 시기에 몰림:</b> 7~8월 10.5%, 9~10월 4.1% · 8월 10일은 하루 12장 중 5장</li>
           <li><b>많이 잡은 모델이 양품도 많이 버림:</b> 불량 1장당 양품 결정 트리 11.9장, 로지스틱 8.5장</li>
-          <li><span class="lb">AI 반론:</span>시간 순으로 나눠 다시 확인 → 불량 17장 중 3장, 결론은 같음</li>
+          <li><b>시간 순 분할로 다시 확인:</b> 불량 17장 중 3장, 결론은 같음</li>
         </ul>
         <p class="final">이 데이터에서는 센서 값으로 불량을 미리 가려내기 어렵고, 불량률은 시기에 따라 크게 달라짐.</p>
         <!-- 내용 끝 -->
