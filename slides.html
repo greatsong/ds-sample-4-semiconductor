@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>팀 수율 발표 · 센서로 불량 웨이퍼 가려내기</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --bg: #0f1219; --bg-accent: #161b26;
+    --ink: #f2f4f8; --ink-dim: #8b93a7;
+    --accent: #ffd166; --accent2: #7cc7ff; --quote: #e8ecf4;
+  }
+  html, body { height: 100%; }
+  body { background: var(--bg); color: var(--ink);
+    font-family: "Pretendard", "Apple SD Gothic Neo", "Noto Sans KR", system-ui, sans-serif; overflow: hidden; }
+  .slide { position: absolute; inset: 0; display: none; flex-direction: column;
+    justify-content: center; padding: 6vh 9vw; line-height: 1.55; }
+  .slide.on { display: flex; }
+  .kicker { font-size: clamp(15px, 1.6vw, 22px); letter-spacing: .14em;
+    color: var(--accent); font-weight: 700; margin-bottom: 2.2vh; }
+  .kicker.blue { color: var(--accent2); }
+  h1 { font-size: clamp(34px, 4.6vw, 64px); font-weight: 800; line-height: 1.25; }
+  h2 { font-size: clamp(26px, 3.4vw, 48px); font-weight: 800; line-height: 1.35; }
+  .sub { margin-top: 3vh; font-size: clamp(17px, 1.9vw, 26px); color: var(--ink-dim); }
+  blockquote { font-size: clamp(21px, 2.6vw, 38px); font-weight: 700; color: var(--quote);
+    line-height: 1.5; max-width: 28em; }
+  blockquote::before { content: "\201C"; color: var(--accent); }
+  blockquote::after { content: "\201D"; color: var(--accent); }
+  .facts { margin-top: 1vh; }
+  .facts li { list-style: none; font-size: clamp(19px, 2.3vw, 33px); margin: 2.4vh 0;
+    padding-left: 1.2em; text-indent: -1.2em; }
+  .facts li::before { content: "\00B7  "; color: var(--accent2); font-weight: 800; }
+  .facts b { color: var(--accent2); font-weight: 800; }
+  .point { margin-top: 3.4vh; font-size: clamp(20px, 2.5vw, 36px); font-weight: 700; }
+  .point b { color: var(--accent); }
+  .small { margin-top: 2.6vh; font-size: clamp(15px, 1.6vw, 22px); color: var(--ink-dim); }
+  .prompt { margin-top: 3vh; background: #101d1a; border: 1px solid #24463d; border-radius: 14px;
+    padding: 2.6vh 2vw; font-family: "SFMono-Regular", "D2Coding", Menlo, monospace;
+    font-size: clamp(14px, 1.55vw, 22px); line-height: 1.7; color: #d7f0ea; max-width: 40em; overflow-wrap: break-word; }
+  table.mini { margin-top: 3vh; border-collapse: collapse; font-size: clamp(16px, 1.9vw, 27px); }
+  table.mini th, table.mini td { padding: 1.2vh 1.4vw; border-bottom: 1px solid #2a3244; text-align: left; }
+  table.mini th { color: var(--accent); font-weight: 800; }
+  table.mini td:first-child { font-weight: 800; white-space: nowrap; }
+  table.mini td em { color: var(--accent2); font-style: normal; font-weight: 800; }
+  .split { margin-top: 3.4vh; display: flex; gap: 3vw; flex-wrap: wrap; }
+  .card { border: 1.5px solid #2a3244; border-radius: 16px; padding: 2.4vh 2vw; min-width: 15em; }
+  .card .t { color: var(--accent); font-weight: 800; font-size: clamp(16px, 1.8vw, 24px); }
+  .card .v { margin-top: 1.2vh; font-size: clamp(30px, 4vw, 58px); font-weight: 800; }
+  .card .d { margin-top: 1vh; color: var(--ink-dim); font-size: clamp(14px, 1.5vw, 20px); }
+  .withimg { display: flex; gap: 3vw; align-items: center; margin-top: 2vh; }
+  .withimg .txt { flex: 1 1 0; min-width: 0; }
+  .withimg img { max-height: 58vh; max-width: 32vw; border-radius: 14px; border: 1px solid #2a3244; object-fit: cover; }
+  .shot.tall img { max-height: 64vh; width: auto; margin: 0 auto; display: block; }
+  .shot.wide img { max-height: 46vh; width: auto; max-width: 100%; margin: 0 auto; display: block; }
+  .src { margin-top: 1.4vh; font-size: clamp(12px, 1.2vw, 16px); color: var(--ink-dim); }
+  .diagram { margin-top: 3vh; background: #f7f3e8; border-radius: 16px; padding: 2vh 1.4vw; overflow-x: auto; }
+  .diagram.short svg { max-height: var(--dh, 40vh); }
+  /* 인터랙티브 위젯 — 밝은 상자 안 */
+  .widget { color: #1c2230; }
+  .diagram .widget svg { width: auto; max-width: 100%; max-height: var(--wh, 44vh); height: auto; display: block; margin: 0 auto; }
+  .wctl { display: flex; flex-wrap: wrap; align-items: center; gap: .8vh 1.4vw; margin-top: 1.2vh;
+          font-size: clamp(14px, 1.5vw, 20px); font-weight: 700; }
+  .wctl label { display: flex; align-items: center; gap: .6vw; white-space: nowrap; }
+  .wctl input[type=range] { width: clamp(120px, 16vw, 260px); accent-color: #2b7fd6; }
+  .wbtn { border: 1.5px solid #c9c2b2; background: #fff; color: #1c2230; border-radius: 999px;
+          padding: .5vh 1.2vw; font: inherit; font-weight: 700; cursor: pointer; }
+  .wbtn.on { background: #2b7fd6; border-color: #2b7fd6; color: #fff; }
+  .wout { margin-left: auto; color: #b07a00; font-variant-numeric: tabular-nums; }
+  .diagram svg { width: auto; max-width: 100%; max-height: 50vh; height: auto; display: block; margin: 0 auto; }
+  .chapter { background: radial-gradient(ellipse at 20% 110%, #1c2434 0%, var(--bg) 60%); }
+  .foot span { white-space: nowrap; }
+  .foot { position: absolute; bottom: 3.4vh; left: 9vw; right: 9vw;
+    display: flex; justify-content: space-between; align-items: center;
+    color: var(--ink-dim); font-size: clamp(12px, 1.2vw, 16px); }
+  .dots { display: flex; gap: 6px; }
+  .dots i { width: 7px; height: 7px; border-radius: 50%; background: #333c4e; }
+  .dots i.here { background: var(--accent); }
+  .hint { position: absolute; top: 3.2vh; right: 4vw; color: var(--ink-dim);
+    font-size: clamp(11px, 1.1vw, 14px); }
+@media (max-width: 760px) { .dots { display: none; } }
+</style>
+<style>
+  .kicker { letter-spacing: .06em; }
+  .bars { margin-top: 3vh; display: flex; flex-direction: column; gap: 2vh; max-width: 46em; }
+  .bar { display: grid; grid-template-columns: 12em 1fr 4em; align-items: center; gap: 1.2vw;
+         font-size: clamp(15px, 1.7vw, 23px); }
+  .bar .track { background: #1c2333; border-radius: 8px; height: 4.2vh; overflow: hidden; }
+  .bar .fill { height: 100%; border-radius: 8px; background: #5b6478; }
+  .bar .fill.main { background: var(--accent2); }
+  .bar .num { font-weight: 800; text-align: right; }
+  table.cm { border-collapse: collapse; font-size: clamp(15px, 1.7vw, 23px); }
+  table.cm th, table.cm td { padding: 1vh 1.2vw; text-align: center; }
+  table.cm th { color: var(--ink-dim); font-weight: 700; }
+  table.cm td { font-weight: 800; border-radius: 6px; }
+  .cols { display: flex; gap: 3.4vw; align-items: flex-start; margin-top: 2.6vh; flex-wrap: wrap; }
+  .cols > div { flex: 1 1 0; min-width: 0; }
+  .lab { color: var(--accent); font-weight: 800; font-size: clamp(14px, 1.5vw, 20px); margin-bottom: 1.2vh; }
+  .facts.tight li { margin: 1.4vh 0; font-size: clamp(16px, 1.8vw, 25px); }
+  table.mini.sm { font-size: clamp(14px, 1.55vw, 21px); margin-top: 1vh; }
+  table.mini.sm th, table.mini.sm td { padding: .9vh 1.1vw; }
+  .qbank { margin-top: 3.4vh; color: var(--ink-dim); font-size: clamp(13px, 1.3vw, 18px); line-height: 1.7; }
+  .qbank b { color: var(--ink); }
+</style>
+<style>
+  .cms { display: flex; gap: 2.4vw; }
+  .cms .lab { margin-bottom: .8vh; }
+  .bad { color: #ff8f6b !important; }
+</style>
+</head>
+<body>
+
+<!-- 1 제목 -->
+<section class="slide cover chapter">
+  <div class="kicker">1 / 9 · 제목</div>
+  <h1>센서 590개의 측정값으로<br>불량 웨이퍼를 미리 가려낼 수 있는가</h1>
+  <p class="sub">팀 수율 · 10101 홍길동 · 10102 김영희 · 10103 이철수</p>
+  <p class="small">SECOM 반도체 공정 데이터 1,567장 · 분류(로지스틱 회귀) · 당곡고 데이터 과학 팀 프로젝트(선생님이 만든 가상 팀의 샘플)</p>
+</section>
+
+<!-- 2 왜 -->
+<section class="slide">
+  <div class="kicker">2 / 9 · 왜 이 주제인가</div>
+  <h2>공장 센서 숫자만으로 불량을 미리 알 수 있을까</h2>
+  <ul class="facts">
+    <li>뉴스에 자주 나오는 반도체 <b>수율</b>(양품의 비율)</li>
+    <li>공장에는 센서가 수백 개, 그 숫자로 불량을 예측할 수 있는지 궁금했습니다</li>
+    <li>11·12차시 뇌졸중 실습: <b>정확도만 보면 놓치는 것</b></li>
+  </ul>
+  <p class="point">확인할 것: 불량이 드문 <b>공장 데이터</b>에서도 같은 일이 생기는가</p>
+</section>
+
+<!-- 3 데이터 -->
+<section class="slide">
+  <div class="kicker">3 / 9 · 데이터</div>
+  <h2>SECOM 웨이퍼 1,567장 · 592열</h2>
+  <ul class="facts tight">
+    <li>출처: UCI Machine Learning Repository, SECOM <span style="color:var(--ink-dim)">(McCann &amp; Johnston, 2008 · CC BY 4.0)</span></li>
+    <li>측정 기간: 2008년 7월 19일 ~ 10월 17일 · 2026-10-15에 받음</li>
+    <li>열: 측정 시각 1 · 판정(fail) 1 · <b>센서 590</b> (이름과 단위가 공개되지 않은 익명 센서)</li>
+    <li>원본은 두 파일, 열 이름 없음 → 선생님이 열 이름을 붙여 한 파일로 합침</li>
+    <li>공장 설비의 측정값 · 사람에 대한 정보 없음</li>
+  </ul>
+</section>
+
+<!-- 4 구멍과 전처리 -->
+<section class="slide">
+  <div class="kicker">4 / 9 · 데이터에서 찾은 구멍과 전처리 판단</div>
+  <h2>빈칸 41,951칸 · 불량은 104장(6.6%)뿐</h2>
+  <div class="cols">
+    <div>
+      <div class="lab">우리의 판단</div>
+      <table class="mini sm">
+        <tr><th>판단</th><th>열 수</th><th>이유</th></tr>
+        <tr><td>상수 열 제거</td><td><em>116</em></td><td>값이 바뀌지 않아 정보 없음</td></tr>
+        <tr><td>빈칸 절반 초과 열 제거</td><td><em>28</em></td><td>채우면 만든 값이 됨</td></tr>
+        <tr><td>남긴 센서 열</td><td><em>446</em></td><td>빈칸은 학습 데이터 중앙값으로</td></tr>
+      </table>
+    </div>
+    <div style="flex:0 0 auto">
+      <div class="lab">거절한 AI 제안</div>
+      <ul class="facts tight">
+        <li>빈칸을 <b>0</b>으로 채우기</li>
+        <li>불량을 복사해 개수 맞추기</li>
+        <li>전체 데이터의 중앙값 사용</li>
+      </ul>
+    </div>
+  </div>
+  <p class="small">양품 1,463장 · 불량 104장 → 정확도만으로는 판단할 수 없는 데이터</p>
+</section>
+
+<!-- 5 방법과 기준선 -->
+<section class="slide">
+  <div class="kicker">5 / 9 · 방법과 기준선</div>
+  <h2>로지스틱 회귀 하나 · 기준선은 전부 양품 찍기</h2>
+  <ul class="facts">
+    <li>학습 <b>1,253장</b> · 시험 <b>314장</b>(불량 21장, 불량 비율 유지, 분할 난수 42)</li>
+    <li>표준화 후 학습 · 12차시의 <b>가중치</b>를 끈 모델과 켠 모델 비교</li>
+    <li>기준선 정확도 <b>0.933</b>(314장 중 293장) · 재현율 <b>0</b>(불량 21장 중 0장)</li>
+    <li>랜덤 포레스트(가중치 켬, 300그루)는 확인용으로만 사용</li>
+  </ul>
+</section>
+
+<!-- 6 결과 -->
+<section class="slide">
+  <div class="kicker">6 / 9 · 결과</div>
+  <h2>정확도는 기준선보다 낮고, 불량은 21장 중 4장</h2>
+  <div class="cols">
+    <div>
+      <div class="lab">정확도</div>
+      <div class="bars" style="margin-top:0">
+        <div class="bar"><span>기준선(전부 양품)</span><div class="track"><div class="fill" style="width:93.3%"></div></div><span class="num">0.933</span></div>
+        <div class="bar"><span>가중치 끔</span><div class="track"><div class="fill" style="width:87.3%"></div></div><span class="num">0.873</span></div>
+        <div class="bar"><span>가중치 켬(최종)</span><div class="track"><div class="fill main" style="width:83.8%"></div></div><span class="num">0.838</span></div>
+        <div class="bar"><span>랜덤 포레스트(확인)</span><div class="track"><div class="fill" style="width:93.3%"></div></div><span class="num">0.933</span></div>
+      </div>
+      <table class="mini sm" style="margin-top:2.6vh">
+        <tr><th>모델</th><th>재현율</th><th>정밀도</th><th>F1</th></tr>
+        <tr><td>가중치 끔</td><td>0.143</td><td>0.120</td><td>0.130</td></tr>
+        <tr><td>가중치 켬</td><td>0.190</td><td>0.105</td><td>0.136</td></tr>
+        <tr><td>랜덤 포레스트</td><td class="bad">0.000</td><td>0.000</td><td>0.000</td></tr>
+      </table>
+    </div>
+    <div style="flex:0 0 auto">
+      <div class="cms">
+        <div><div class="lab">가중치 끔</div><table class="cm"><tr><th></th><th>예측 양품</th><th>예측 불량</th></tr><tr><th>실제 양품</th><td style="background:rgba(124,199,255,0.87);color:#0f1219">271</td><td style="background:rgba(124,199,255,0.33);color:#f2f4f8">22</td></tr><tr><th>실제 불량</th><td style="background:rgba(124,199,255,0.31);color:#f2f4f8">18</td><td style="background:rgba(124,199,255,0.20);color:#f2f4f8">3</td></tr></table></div>
+        <div><div class="lab">가중치 켬</div><table class="cm"><tr><th></th><th>예측 양품</th><th>예측 불량</th></tr><tr><th>실제 양품</th><td style="background:rgba(124,199,255,0.87);color:#0f1219">259</td><td style="background:rgba(124,199,255,0.39);color:#f2f4f8">34</td></tr><tr><th>실제 불량</th><td style="background:rgba(124,199,255,0.31);color:#f2f4f8">17</td><td style="background:rgba(124,199,255,0.21);color:#f2f4f8">4</td></tr></table></div>
+      </div>
+      <p class="small" style="margin-top:1.6vh">시험 314장 · 행 = 실제, 열 = 예측</p>
+    </div>
+  </div>
+</section>
+
+<!-- 7 해석 -->
+<section class="slide">
+  <div class="kicker">7 / 9 · 해석</div>
+  <h2>이 데이터로는 이 방법으로 불량을 미리 가려내기 어렵다</h2>
+  <ul class="facts tight">
+    <li>재현율 0.190: 실제 불량 21장 중 <b>4장</b>만 잡음 · 정밀도 0.105: 불량 판정 38장 중 4장만 실제 불량</li>
+    <li>랜덤 포레스트 정확도 0.933 = 기준선: 전부 양품이라고 답한 모델 → <b>정확도 93%는 아무것도 안 한 것과 같음</b></li>
+    <li>AI 평가 거절: "정확도 87%면 괜찮다" → 기준선 0.933보다 낮음</li>
+    <li>AI 예상 확인: 가중치를 켜면 불량 <b>1장</b> 더 잡는 대신 양품 <b>12장</b>을 더 버림</li>
+    <li>AI 제안 거절: 문턱값 낮추기 (수업 범위 밖, 설명할 수 없는 조정)</li>
+    <li>반론 수용: 시간 순 분할(뒤 20% 시험, 불량 17장) → 기준선 0.946 · 끔 0.933 · 켬 0.911, 결론 같음</li>
+  </ul>
+</section>
+
+<!-- 8 한계 -->
+<section class="slide">
+  <div class="kicker">8 / 9 · 한계</div>
+  <h2>이 결과를 그대로 믿기 어려운 이유</h2>
+  <ul class="facts tight">
+    <li>센서 590개가 익명이라 "어느 공정 때문"이라고 말할 수 없음</li>
+    <li>불량 104장(학습 83장)으로 센서 446개의 패턴을 배우기에는 부족</li>
+    <li>시험 불량 21장: 한 장 차이로 재현율 0.048 변화</li>
+    <li>2008년 한 공장의 약 석 달치 데이터</li>
+    <li>빈칸 10,868칸을 중앙값으로 채움 · 빈칸이 생긴 이유는 알 수 없음</li>
+  </ul>
+  <p class="point">오용 주의: 이 모델로 실제 라인을 거르면 <b>양품 34장을 버리고 불량 17장을 내보냅니다</b></p>
+</section>
+
+<!-- 9 질문 -->
+<section class="slide chapter">
+  <div class="kicker">9 / 9 · 질문 받겠습니다</div>
+  <h1>질문 받겠습니다</h1>
+  <p class="sub">앱: index.html · 코드와 기록: 저장소 code/ · log/</p>
+  <div class="qbank">
+    <b>공개 질문 은행</b><br>
+    ① 이 그래프(또는 숫자)는 무엇을 뜻합니까 · ② 기준선보다 얼마나 나아졌습니까 · ③ 이 결과를 믿을 수 없는 이유 하나<br>
+    ④ 이 결과에서 새로 알게 된 것 · ⑤ 주제를 왜 이것으로 정했습니까
+  </div>
+</section>
+
+<div class="hint">← → 이동 · Home 처음으로</div>
+<div class="foot">
+  <span>팀 수율 · 데이터 과학 팀 프로젝트</span>
+  <div class="dots" id="dots"></div>
+  <span id="pageno"></span>
+</div>
+
+<script>
+  const slides = [...document.querySelectorAll('.slide')];
+  const dots = document.getElementById('dots');
+  slides.forEach(() => dots.appendChild(document.createElement('i')));
+  let cur = 0;
+  function show(i) {
+    cur = Math.max(0, Math.min(slides.length - 1, i));
+    slides.forEach((s, k) => s.classList.toggle('on', k === cur));
+    [...dots.children].forEach((d, k) => d.classList.toggle('here', k === cur));
+    document.getElementById('pageno').textContent = (cur + 1) + ' / ' + slides.length;
+  }
+  addEventListener('keydown', e => {
+    if (e.target.matches('input, select, textarea, button')) return;   // 위젯 조작 중에는 넘기지 않음
+    if (['ArrowRight', ' ', 'PageDown'].includes(e.key)) show(cur + 1);
+    if (['ArrowLeft', 'PageUp'].includes(e.key)) show(cur - 1);
+    if (e.key === 'Home') show(0);
+  });
+  addEventListener('click', e => { if (e.target.closest('a, .widget')) return; show(cur + (e.clientX > innerWidth / 2 ? 1 : -1)); });
+  show(0);
+</script>
+</body>
+</html>
