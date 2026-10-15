@@ -115,9 +115,11 @@ candidates = [
     ("랜덤 포레스트(300그루, 가중치 켬)", RandomForestClassifier(n_estimators=300, class_weight="balanced", random_state=0)),
     ("XGBoost(기본값, 가중치 켬)", XGBClassifier(scale_pos_weight=spw, random_state=0)),
 ]
+cand = {}
 for name, clf in candidates:
     model = make_pipeline(SimpleImputer(strategy="median"), StandardScaler(), clf).fit(X_tr, y_tr)
     s = scores(y_te, model.predict(X_te))
+    cand[name] = s
     show(name, s)
     print(f"    기준선 정확도와의 차이: {s['acc'] - (y_te == 0).mean():.3f}")
 
@@ -131,3 +133,45 @@ X_tr, X_te, y_tr, y_te = train_test_split(df[sensors], y, test_size=0.2, random_
 for weight in [False, True]:
     model = logit(weight).fit(X_tr, y_tr)
     show(f"로지스틱 회귀 · 가중치 {'켬' if weight else '끔'}", scores(y_te, model.predict(X_te)))
+
+print("\n## 인사이트(우리 팀이 찾아낸 것)")
+print("### ① 센서 하나하나와 불량의 상관")
+r = df[keep].corrwith(y).dropna()
+ar = r.abs().sort_values(ascending=False)
+print(f"상관계수를 계산할 수 있는 센서 {len(r)}개 · |r| 가장 큰 센서 {ar.index[0]} r = {r[ar.index[0]]:.3f} "
+      f"(r² = {r[ar.index[0]] ** 2:.3f}, 불량 여부의 변화 가운데 {r[ar.index[0]] ** 2:.1%}만 함께 움직임)")
+print("|r| 상위 5개:", ", ".join(f"{c} {r[c]:.3f}" for c in ar.index[:5]))
+print(f"|r|이 0.1을 넘는 센서 {int((ar > 0.1).sum())}개 · 0.2를 넘는 센서 {int((ar > 0.2).sum())}개 · |r| 중앙값 {ar.median():.3f}")
+
+print("\n### ② 시기별 불량률")
+month = df.groupby(ts.dt.to_period("M"))["fail"].agg(["count", "sum", "mean"])
+for p, row in month.iterrows():
+    print(f"{p.month}월: {int(row['count'])}장 중 불량 {int(row['sum'])}장 ({row['mean']:.1%})")
+week = df.groupby(ts.dt.to_period("W"))["fail"].agg(["count", "sum", "mean"])
+w20 = week[week["count"] >= 20]
+hi, lo = w20["mean"].idxmax(), w20["mean"].idxmin()
+print(f"주별(월~일, 20장 이상인 주 {len(w20)}개) 불량률 범위: {w20['mean'].min():.1%} ~ {w20['mean'].max():.1%}")
+print(f"가장 높은 주 {hi.start_time:%m-%d}~{hi.end_time:%m-%d}: {int(w20.loc[hi, 'count'])}장 중 {int(w20.loc[hi, 'sum'])}장 · "
+      f"가장 낮은 주 {lo.start_time:%m-%d}~{lo.end_time:%m-%d}: {int(w20.loc[lo, 'count'])}장 중 {int(w20.loc[lo, 'sum'])}장")
+early = ts < "2008-09-01"
+print(f"7~8월 {int(early.sum())}장 중 불량 {int(y[early].sum())}장 ({y[early].mean():.1%}) · "
+      f"9~10월 {int((~early).sum())}장 중 불량 {int(y[~early].sum())}장 ({y[~early].mean():.1%})")
+day = df.groupby(ts.dt.date)["fail"].agg(["count", "sum", "mean"])
+top = day.sort_values(["sum", "mean"], ascending=False).iloc[0]
+print(f"불량이 가장 많이 나온 날 {day.sort_values(['sum', 'mean'], ascending=False).index[0]}: {int(top['count'])}장 중 {int(top['sum'])}장 · "
+      f"측정한 {len(day)}일 가운데 불량이 한 장도 없던 날 {int((day['sum'] == 0).sum())}일")
+d10 = day.loc[pd.Timestamp("2008-08-10").date()]
+print(f"8월 10일: {int(d10['count'])}장 중 {int(d10['sum'])}장 불량 ({d10['mean']:.1%})")
+
+print("\n### ③ 불량 1장을 잡는 데 불량으로 판정한 양품 수(무작위 분할, 시험 314장)")
+for name in ["로지스틱 회귀(가중치 켬)", "결정 트리(깊이 4, 가중치 켬)"]:
+    (_, fp), (_, tp) = cand[name]["cm"]
+    print(f"{name}: 양품 {fp}장 / 잡은 불량 {tp}장 = 불량 1장당 양품 {fp / tp:.1f}장")
+
+print("\n### ④ 빈칸과 불량의 관계")
+na_half = df[half].isna().sum(axis=1)
+na_all = df[sensors].isna().sum(axis=1)
+print(f"빈칸이 절반을 넘는 28개 열에서 웨이퍼 한 장의 빈칸 수 평균: 양품 {na_half[y == 0].mean():.2f}개 · 불량 {na_half[y == 1].mean():.2f}개")
+print(f"센서 590개 전체에서 웨이퍼 한 장의 빈칸 수 평균: 양품 {na_all[y == 0].mean():.2f}개 · 불량 {na_all[y == 1].mean():.2f}개")
+na_rate = df[half].isna().mean(axis=1).groupby(ts.dt.to_period("M")).mean()
+print("28개 열의 월별 빈칸 비율:", " · ".join(f"{p.month}월 {v:.1%}" for p, v in na_rate.items()))

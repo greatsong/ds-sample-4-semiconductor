@@ -105,13 +105,15 @@
   table.mini.cmp { font-size: clamp(14px, 1.6vw, 23px); width: 100%; }
   table.mini.cmp th, table.mini.cmp td { padding: 1.2vh .9vw; }
   table.mini.cmp td { white-space: nowrap; }
+  .ins li { font-size: clamp(16px, 1.85vw, 26px); margin: 2vh 0; }
+  .ins li span { display: block; text-indent: 0; margin-top: .4vh; color: var(--ink-dim); font-size: .82em; }
 </style>
 </head>
 <body>
 
 <!-- 1 제목 -->
 <section class="slide chapter">
-  <div class="kicker">1 / 16 · 제목</div>
+  <div class="kicker">1 / 17 · 제목</div>
   <h1>센서 590개의 측정값으로<br>불량 웨이퍼를 미리 가려낼 수 있는가</h1>
   <p class="sub">팀 수율 · 10101 홍길동 · 10102 김영희 · 10103 이철수</p>
   <p class="small">선생님이 만든 가상 팀의 샘플 · 데이터와 수치는 실제 계산값</p>
@@ -119,7 +121,7 @@
 
 <!-- 2 데이터셋 -->
 <section class="slide">
-  <div class="kicker">2 / 16 · 우리 팀의 데이터셋</div>
+  <div class="kicker">2 / 17 · 우리 팀의 데이터셋</div>
   <h2>우리 팀의 데이터셋</h2>
   <div class="withimg">
     <ul class="facts txt">
@@ -134,7 +136,7 @@
 
 <!-- 3 선택 이유 -->
 <section class="slide">
-  <div class="kicker">3 / 16 · 이 문제를 선택한 이유</div>
+  <div class="kicker">3 / 17 · 이 문제를 선택한 이유</div>
   <h2>이 문제를 선택한 이유</h2>
   <ul class="facts">
     <li>뉴스에 자주 나오는 반도체 <b>수율</b>(양품의 비율)</li>
@@ -146,7 +148,7 @@
 
 <!-- 4 과정 -->
 <section class="slide">
-  <div class="kicker">4 / 16 · 어떤 과정으로 분석했는지</div>
+  <div class="kicker">4 / 17 · 어떤 과정으로 분석했는지</div>
   <h2>어떤 과정으로 분석했는지</h2>
   <ul class="facts">
     <li>데이터 승인, 양품·불량 표기 방향 확인 (2~3차시)</li>
@@ -159,7 +161,7 @@
 
 <!-- 5 고려한 모델 -->
 <section class="slide">
-  <div class="kicker">5 / 16 · 어떤 모델을 고려했는지</div>
+  <div class="kicker">5 / 17 · 어떤 모델을 고려했는지</div>
   <h2>어떤 모델을 고려했는지</h2>
   <table class="mini sm">
     <tr><th>후보 모델</th><th>정확도</th><th>재현율</th><th>정밀도</th><th>F1</th><th>잡은 불량</th></tr>
@@ -175,7 +177,7 @@
 
 <!-- 6 선택 이유 -->
 <section class="slide">
-  <div class="kicker">6 / 16 · 왜 이 모델을 선택했는지</div>
+  <div class="kicker">6 / 17 · 왜 이 모델을 선택했는지</div>
   <h2>왜 이 모델을 선택했는지</h2>
   <ul class="facts">
     <li>최종: <b>로지스틱 회귀(가중치 켬)</b></li>
@@ -188,7 +190,7 @@
 
 <!-- 7 평가지표 -->
 <section class="slide">
-  <div class="kicker">7 / 16 · 우리가 사용한 평가지표</div>
+  <div class="kicker">7 / 17 · 우리가 사용한 평가지표</div>
   <h2>우리가 사용한 평가지표</h2>
   <ul class="facts">
     <li>정확도: 웨이퍼 전체 가운데 판정이 맞은 비율</li>
@@ -202,7 +204,7 @@
 
 <!-- 8 결정 -->
 <section class="slide">
-  <div class="kicker">8 / 16 · 모델링 과정에서 우리 팀이 결정한 것</div>
+  <div class="kicker">8 / 17 · 모델링 과정에서 우리 팀이 결정한 것</div>
   <h2>모델링 과정에서 우리 팀이 결정한 것</h2>
   <ul class="facts">
     <li>상수 열 <b>116개</b> · 빈칸 절반 초과 열 <b>28개</b> 제거</li>
@@ -215,35 +217,49 @@
 
 <!-- 9 해석 -->
 <section class="slide">
-  <div class="kicker">9 / 16 · 최종 분석 결과에 대한 우리 팀의 해석</div>
+  <div class="kicker">9 / 17 · 최종 분석 결과에 대한 우리 팀의 해석</div>
   <h2>최종 분석 결과에 대한 우리 팀의 해석</h2>
   <div class="withimg">
     <div class="diagram plot"><div class="chart" id="g9"></div></div>
-    <ul class="facts txt">
-      <li><b>정확도 93%</b> = 아무것도 안 한 것과 같음</li>
-      <li>최종 모델: 불량 <b>21장 중 4장</b></li>
-      <li>기준선을 넘은 후보 없음</li>
-      <li>결론: 이 조건에서는 가려내기 어려움</li>
+    <ul class="facts txt ins">
+      <li><b>① 불량과 함께 움직이는 센서 없음</b><span>최대 상관 0.156 · 0.2 넘는 센서 0개</span></li>
+      <li><b>② 불량은 시기에 몰림</b><span>7~8월 10.5% · 9~10월 4.1%</span></li>
+      <li><b>③ 많이 잡을수록 양품도 많이 버림</b><span>불량 1장당 양품: 트리 11.9장 · 로지스틱 8.5장</span></li>
     </ul>
   </div>
-  <p class="small">오용 주의: 실제 라인에 쓰면 양품 34장 폐기 · 불량 17장 통과</p>
+  <p class="small">결론: 이 데이터에서는 센서로 가려내기 어려움 · 정확도 93% = 아무것도 안 한 것</p>
 </section>
 
-<!-- 10 추가 연구 -->
+<!-- 10 찾아낸 것 -->
 <section class="slide">
-  <div class="kicker">10 / 16 · 이후 추가로 연구한다면</div>
+  <div class="kicker">10 / 17 · 우리 팀이 찾아낸 것</div>
+  <h2>우리 팀이 찾아낸 것: 불량은 시기에 몰림</h2>
+  <div class="withimg">
+    <div class="diagram plot"><div class="chart" id="g10"></div></div>
+    <ul class="facts txt small-facts">
+      <li>가장 높은 주(7/28~8/3): <b>48장 중 10장</b></li>
+      <li>8월 10일: 하루 <b>12장 중 5장</b></li>
+      <li>불량 0장인 날: <b>86일 중 39일</b></li>
+      <li>이유는 이 데이터로 알 수 없음</li>
+    </ul>
+  </div>
+</section>
+
+<!-- 11 추가 연구 -->
+<section class="slide">
+  <div class="kicker">11 / 17 · 이후 추가로 연구한다면</div>
   <h2>이후 추가로 연구한다면 더 해 보고 싶은 것</h2>
   <table class="mini">
     <tr><th>구분</th><th>키워드</th></tr>
-    <tr><td>더 해 볼 분석</td><td>불량 데이터 추가 수집 · 센서 이름이 공개된 공정 데이터 · 시간에 따른 불량 비율</td></tr>
+    <tr><td>더 해 볼 분석</td><td>불량 데이터 추가 수집 · 센서 이름이 공개된 공정 데이터 · 불량이 몰린 7월 말~8월의 공정 기록</td></tr>
     <tr><td>교과 연계</td><td>화학: 반도체 소재와 공정 · 물리학: 반도체의 원리 · 수학: 조건부 확률 · 통합사회: 산업 구조</td></tr>
     <tr><td>진로 분야</td><td>반도체 공정 엔지니어 · 품질 관리 엔지니어 · 제조 데이터 분석가</td></tr>
   </table>
 </section>
 
-<!-- 11 느낀 점 -->
+<!-- 12 느낀 점 -->
 <section class="slide">
-  <div class="kicker">11 / 16 · 느끼고 배운 점</div>
+  <div class="kicker">12 / 17 · 느끼고 배운 점</div>
   <h2>AI를 활용하고 데이터를 분석하며 느끼고 배운 점</h2>
   <ul class="facts small-facts">
     <li>홍길동: "정확도가 제일 높은 모델이 아무것도 안 한 모델이라는 게 이 프로젝트에서 제일 기억에 남는다."</li>
@@ -253,9 +269,9 @@
   <p class="point">AI 활용에서 배운 것: <b>추천 모델도 혼동행렬로 확인</b> · <b>예상은 직접 실행으로 확인</b></p>
 </section>
 
-<!-- 12~15 2부 · 모델 소개 (3분 발표) -->
+<!-- 13~16 2부 · 모델 소개 (3분 발표) -->
 <section class="slide">
-  <div class="kicker">12 / 16 · 모델 소개 · 우리가 선택한 모델</div>
+  <div class="kicker">13 / 17 · 모델 소개 · 우리가 선택한 모델</div>
   <h2>우리가 선택한 모델: 로지스틱 회귀</h2>
   <ul class="facts small-facts">
     <li>원리: 변수마다 계수를 곱해 더한 값을 0~1 확률로 바꿔 판정</li>
@@ -267,7 +283,7 @@
 </section>
 
 <section class="slide">
-  <div class="kicker">13 / 16 · 모델 소개 · 비교 모델 1</div>
+  <div class="kicker">14 / 17 · 모델 소개 · 비교 모델 1</div>
   <h2>비교 모델 1: 결정 트리(깊이 4)</h2>
   <ul class="facts small-facts">
     <li>원리: "이 센서 값이 기준보다 큰가" 질문으로 나눠 가며 판정</li>
@@ -279,7 +295,7 @@
 </section>
 
 <section class="slide">
-  <div class="kicker">14 / 16 · 모델 소개 · 비교 모델 2</div>
+  <div class="kicker">15 / 17 · 모델 소개 · 비교 모델 2</div>
   <h2>비교 모델 2: XGBoost</h2>
   <ul class="facts small-facts">
     <li>원리: 작은 트리를 차례로 보탬, 다음 트리가 앞 트리의 오차를 줄임</li>
@@ -291,7 +307,7 @@
 </section>
 
 <section class="slide">
-  <div class="kicker">15 / 16 · 모델 소개 · 세 모델 비교 요약</div>
+  <div class="kicker">16 / 17 · 모델 소개 · 세 모델 비교 요약</div>
   <h2>세 모델 비교 요약</h2>
   <table class="mini cmp">
     <tr><th>모델</th><th>원리</th><th>장점</th><th>단점</th><th>적합한 상황</th><th>우리 데이터</th></tr>
@@ -302,9 +318,9 @@
   <p class="point">우리 데이터에는 <b>로지스틱 회귀</b>: 기준선 <b>0.933</b>을 넘은 모델 없음, F1 <b>0.136</b>으로 가장 높고 설명 가능</p>
 </section>
 
-<!-- 16 마무리 -->
+<!-- 17 마무리 -->
 <section class="slide chapter">
-  <div class="kicker">16 / 16 · 마무리</div>
+  <div class="kicker">17 / 17 · 마무리</div>
   <h1>감사합니다</h1>
   <p class="sub">질문 받겠습니다</p>
   <p class="small">팀 수율 · 홍길동 · 김영희 · 이철수</p>
@@ -360,6 +376,17 @@
         { type: 'bar', orientation: 'h', name: '재현율', y: names, x: rec, text: rec.map(v => v.toFixed(3)),
           textposition: 'outside', cliponaxis: false, marker: { color: '#e0663a' } }
       ], lay, { staticPlot: true, responsive: true });
+    }
+    if (id === 'g10') {
+      const lay = base();
+      lay.title = { text: '월별 불량률 (1,567장)', font: { size: 17 } };
+      lay.yaxis.title = { text: '불량률(%)' };
+      lay.yaxis.range = [0, 27];
+      const m = ['7월(63장)', '8월(555장)', '9월(590장)', '10월(359장)'];
+      const r = [22.2, 9.2, 2.9, 6.1];
+      Plotly.newPlot('g10', [{ type: 'bar', x: m, y: r, text: r.map(v => v.toFixed(1) + '%'),
+        textposition: 'outside', cliponaxis: false, marker: { color: ['#e0663a', '#e0663a', '#9aa0ad', '#9aa0ad'] } }], lay,
+        { staticPlot: true, responsive: true });
     }
   }
   function show(i) {
