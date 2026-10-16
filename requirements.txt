@@ -1,7 +1,7 @@
-streamlit==1.53.1
-pandas==2.3.3
-numpy==1.26.4
-plotly==6.6.0
-scikit-learn==1.8.0
+streamlit
+pandas
+numpy
+plotly
+scikit-learn
 # xgboost는 code/check.py의 후보 모델 비교에만 필요하다(앱 실행에는 필요 없음)
-xgboost==3.2.0
+xgboost
